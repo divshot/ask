@@ -1,0 +1,37 @@
+{
+  "name": "request-builder",
+  "version": "0.1.0",
+  "description": "Request Builder",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "mocha test/**/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/divshot/request-builder.git"
+  },
+  "keywords": [
+    "request",
+    "xhr",
+    "ajax",
+    "browserify",
+    "http"
+  ],
+  "author": "Divshot",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/divshot/request-builder/issues"
+  },
+  "homepage": "https://github.com/divshot/request-builder",
+  "devDependencies": {
+    "browserify": "^3.43.0",
+    "mocha": "^1.18.2",
+    "expect.js": "^0.3.1"
+  },
+  "dependencies": {
+    "httpify": "^0.3.1"
+  }
+}
