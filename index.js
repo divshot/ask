@@ -41,13 +41,12 @@ RequestBuilder.prototype.promise = function (callback) {
 
 RequestBuilder.prototype.http = function (method) {
   var instance = this;
-  var join = RequestBuilder.join;
   var args = asArray(arguments);
-  var url = join(args.slice(1).join('/'));
+  var url = rest(args).join('/');
   
-  //
+  // New request object
   var request = function () {
-    if (request.attributes.origin) url = join(request.attributes.origin, url);
+    if (request.attributes.origin) url = RequestBuilder.join(request.attributes.origin, url);
     
     var requestObject = {
       url: url,
@@ -55,9 +54,7 @@ RequestBuilder.prototype.http = function (method) {
       headers: request.headers
     };
     
-    requestObject = extend(requestObject, request.xhrOptions);
-    
-    return instance._rawHttp(requestObject);
+    return instance._rawHttp(extend(requestObject, request.xhrOptions));
   };
   
   request._builderInstance = instance;
@@ -78,6 +75,10 @@ RequestBuilder.HTTP_METHODS.forEach(function (method) {
     return this.http.apply(this, args);
   };
 });
+
+function rest (arr) {
+  return arr.slice(1);
+}
 
 //
 module.exports = RequestBuilder;
