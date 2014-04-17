@@ -29,7 +29,8 @@ RequestBuilder.prototype._rawHttp = function (options) {
         response.body = JSON.parse(body);
       }
       finally{
-        if (response.statusCode >= 300) return reject(response);
+        // TODO: move this into httpify module
+        if (response.statusCode >= 400 && response.statusCode < 600) return reject(response);
         
         resolve(response);
       }
@@ -47,13 +48,14 @@ RequestBuilder.prototype.http = function (method) {
   var url = rest(args).join('/');
   
   // New request object
-  var request = function () {
+  var request = function (params) {
     if (request.origin()) url = RequestBuilder.join(request.origin(), url);
     
     var requestObject = {
       url: url,
       method: method,
-      headers: request.headers
+      headers: request.headers,
+      form: params
     };
     
     return instance._rawHttp(extend(requestObject, request.xhrOptions));

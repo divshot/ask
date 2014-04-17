@@ -2,7 +2,7 @@ var expect = require('expect.js');
 var Mocksy = require('mocksy');
 var server = new Mocksy({port: 9876});
 var RequestBuilder = require('../index.js');
-var host = 'http://localhost:9876';
+var ORIGIN = 'http://localhost:9876';
 
 describe('request instance', function () {
   var request;
@@ -18,22 +18,23 @@ describe('request instance', function () {
   
   it('sets defaults in the contructor', function () {
     request = new RequestBuilder({
-      origin: host,
+      origin: ORIGIN,
       headers: {
         'Authorization': 'Bearer 1234'
       },
       xhrOptions: {
-        'method': 'POST'
+        'method': 'POST',
+        'withCredentials': true
       }
     });
     
-    expect(request.origin()).to.equal(host);
+    expect(request.origin()).to.equal(ORIGIN);
     expect(request.header('Authorization')).to.equal('Bearer 1234');
     expect(request.xhrOption('method')).to.equal('POST');
   });
   
   it('sets the default origin for all http requests on the instance', function () {
-    request.origin(host);
+    request.origin(ORIGIN);
     
     return request.get('test')().then(function (res) {
       expect(res.body.url).to.equal('/test');
@@ -43,7 +44,7 @@ describe('request instance', function () {
   
   it('sets the default headers for all http requests on the instance', function () {
     request
-      .origin(host)
+      .origin(ORIGIN)
       .header('Authorization', 'Bearer 1234');
     
     return request.get('test')().then(function (res) {
@@ -53,7 +54,7 @@ describe('request instance', function () {
   
   it('sets the default xhr options for all http requests on the instance', function () {
     request
-      .origin(host)
+      .origin(ORIGIN)
       .xhrOption('method', 'POST');
     
     return request.get('test')().then(function (res) {
@@ -76,7 +77,7 @@ describe('making bare requests', function () {
   });
   
   it('makes a request with a given http method', function () {
-    var apps = request.http('GET', host, 'apps');
+    var apps = request.http('GET', ORIGIN, 'apps');
     
     return apps().then(function (res) {
       expect(res.body.method).to.equal('GET');
@@ -90,7 +91,7 @@ describe('making bare requests', function () {
     // EXAMPLE: request.get('url', 123)
     
     it('makes a ' + method + ' request', function () {
-      var requester = request[method.toLowerCase()](host, 'requester', 123);
+      var requester = request[method.toLowerCase()](ORIGIN, 'requester', 123);
       
       return requester().then(function (res) {
         expect(res.body.method).to.equal(method);
@@ -99,8 +100,15 @@ describe('making bare requests', function () {
     });
   });
   
-  it('defaults to a get request');
-  it('passes body parameters to various methods');
+  it('passes body parameters to various methods', function () {
+    var create = request
+      .origin(ORIGIN)
+      .post('test');
+    
+    return create({key: 'value'}).then(function (res) {
+      expect(res.body.body).to.eql({key: 'value'});
+    });
+  });
   
 });
 
@@ -120,7 +128,7 @@ describe('setting options', function () {
   it('sets the request origin', function () {
     var requester = request
       .get('test')
-      .origin(host);
+      .origin(ORIGIN);
     
     return requester().then(function (res) {
       expect(res.body.url).to.equal('/test');
@@ -130,7 +138,7 @@ describe('setting options', function () {
   it('sets the header for the request', function () {
     var requester = request
       .get('test')
-      .origin(host)
+      .origin(ORIGIN)
       .header('Authorization', 'Bearer 1234');
       
     return requester().then(function (res) {
@@ -141,7 +149,7 @@ describe('setting options', function () {
   it('sets an xhr options for the request', function () {
     var requester = request
       .get('test')
-      .origin(host)
+      .origin(ORIGIN)
       .xhrOption('method', 'POST')
       .xhrOption('form', {test: 'test'});
       
@@ -153,7 +161,7 @@ describe('setting options', function () {
   
   it('sets the default settings from the instance on the request', function () {
     request
-      .origin(host)
+      .origin(ORIGIN)
       .header('Authorization', 'Bearer 1234');
     
     var test = request.get('test');
@@ -168,7 +176,7 @@ describe('setting options', function () {
     
     // Instance
     request
-      .origin(host)
+      .origin(ORIGIN)
       .xhrOption('method', 'POST')
       .header('Authorization', 'Bearer 1234');
     
@@ -189,7 +197,7 @@ describe('setting options', function () {
     expect(request.header('Authorization')).to.equal('Bearer 1234');
     expect(test.header('Authorization')).to.equal('Session 1234');
     
-    expect(request.origin()).to.equal(host);
+    expect(request.origin()).to.equal(ORIGIN);
     expect(test.origin()).to.equal(TEST_ORIGIN);
     expect(test2.origin()).to.equal(TEST_ORIGIN2);
   });
