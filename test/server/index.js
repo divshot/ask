@@ -1,7 +1,7 @@
 var expect = require('expect.js');
 var Mocksy = require('mocksy');
 var server = new Mocksy({port: 9876});
-var RequestBuilder = require('../index.js');
+var RequestBuilder = require('../../index.js');
 var ORIGIN = 'http://localhost:9876';
 
 describe('request instance', function () {
