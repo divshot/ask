@@ -23,12 +23,15 @@ describe('making bare requests', function () {
     });
   });
   
-  it('makes a get request', function () {
-    var apps = request.get(host, 'apps');
-    
-    return apps().then(function (res) {
-      expect(res.body.method).to.equal('GET');
-      expect(res.body.url).to.equal('/apps');
+  // Helpers
+  request._httpMethods.forEach(function (method) {
+    it('makes a ' + method + ' request', function () {
+      var requester = request[method.toLowerCase()](host, 'requester');
+      
+      return requester().then(function (res) {
+        expect(res.body.method).to.equal(method);
+        expect(res.body.url).to.equal('/requester');
+      });
     });
   });
   

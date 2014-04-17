@@ -15,6 +15,8 @@ var request = function (method) {
   };
 };
 
+request._httpMethods = 'GET POST PUT DELETE PATCH OPTIONS'.split(' ');
+
 request._http = function (options) {
   return new Promise(function (resolve, reject) {
     http(options, function (err, response, body) {
@@ -32,11 +34,14 @@ request._http = function (options) {
   });
 };
 
-request.get = function () {
-  var args = asArray(arguments);
-  args.unshift('GET');
-  
-  return request.apply(request, args);
-};
+// Create help http verb functions
+request._httpMethods.forEach(function (method) {
+  request[method.toLowerCase()] = function () {
+    var args = asArray(arguments);
+    args.unshift(method);
+    
+    return request.apply(request, args);
+  };
+});
 
 module.exports = request;
