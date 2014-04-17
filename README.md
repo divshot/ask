@@ -32,6 +32,35 @@ Standalone
 <script src="/bower_components/request-builder/dist/requestbuilder.js"></script>
 ```
 
+Angular
+
+```html
+<script src="/bower_components/request-builder/dist/requestbuilder.angular.js"></script>
+```
+
+```js
+var myApp = angular.module('myApp', ['requestBuilder']);
+
+myApp.config(function (requestBuilderProvider) {
+  
+  /* This is optional */
+  
+  requestBuilderProvider.configure({
+    origin: 'http://api.example.com',
+    headers: {/* optional default headers */},
+    xhrOptions: {/* optional xhr options */}
+  });
+});
+
+myApp.controller('SomeController', function (request /* instance of request builder */) {
+  
+});
+
+myApp.controller('AnotherController', function (RequestBuilder /* ready to instantiate */) {
+  
+})
+```
+
 Nodejs/Browserify
 
 ```js
