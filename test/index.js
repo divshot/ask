@@ -202,6 +202,15 @@ describe('setting options', function () {
     expect(test2.origin()).to.equal(TEST_ORIGIN2);
   });
   
+  it('gets the url of a resource', function () {
+    var test = request
+      .origin(ORIGIN)
+      .get('test', 123);
+    
+    expect(request.url()).to.equal(ORIGIN + '/');
+    expect(test.url()).to.equal(ORIGIN + '/test/123');
+  });
+  
   // FROM: Collin
   // 
   // it('does not modify state', function() {
@@ -210,6 +219,70 @@ describe('setting options', function () {
   //   var requester3 = requester2.origin('host2');
   //   expect(requester2._builderInstance.attributes.origin).to.equal('host1');
   // });
+  
+});
+
+describe('query strings', function () {
+  var request;
+  
+  beforeEach(function (done) {
+    request = new RequestBuilder();
+    server.start(done);
+  });
+  
+  afterEach(function (done) {
+    server.stop(done);
+  });
+  
+  it('returns a stringified version of query parameters', function () {
+    var test = request
+      .origin(ORIGIN)
+      .query('page', 1)
+      .query('name', 'name')
+      .get('test');
+    
+    test.query('email', 'email');
+    
+    expect(request.query()).to.equal('page=1&name=name');
+    expect(test.query()).to.equal('page=1&name=name&email=email');
+  });
+  
+  it('adds query string parameters', function () {
+    request
+      .origin(ORIGIN)
+      .query('page', 1)
+      .query('limit', 10);
+    
+    var withoutQuery = request.get('test');
+    var withQuery = request.get('test?name=name');
+    
+    expect(withoutQuery.url()).to.equal(ORIGIN + '/test?page=1&limit=10');
+    expect(withQuery.url()).to.equal(ORIGIN + '/test?name=name&page=1&limit=10');
+    
+    return withoutQuery().then(function (res) {
+      expect(res.body.url).to.equal('/test?page=1&limit=10');
+    });
+  });
+  
+  it('only adds the query parameter to the string if it has a value', function () {
+    request
+      .origin(ORIGIN)
+      .query('page', 1)
+      .query('limit', null);
+    
+    expect(request.url()).to.equal(ORIGIN + '/?page=1');
+  });
+  
+  it('adds query parameters from an object', function () {
+    request
+      .origin(ORIGIN)
+      .query({
+        page: 1,
+        limit: 10
+      });
+    
+    expect(request.url()).to.equal(ORIGIN + '/?page=1&limit=10');
+  });
   
 });
   

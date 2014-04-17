@@ -1,12 +1,13 @@
 !function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.RequestBuilder=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 var asArray = _dereq_('as-array');
-var http = _dereq_('httpify');
+var request = _dereq_('httpify');
 var urlJoin = _dereq_('./lib/url-join');
 var Promise = _dereq_('promise');
 var deap = _dereq_('deap');
 var clone = deap.clone;
 var extend = deap.extend;
 var settings = _dereq_('./lib/settings');
+
 var HTTP_METHODS = 'GET POST PUT DELETE PATCH OPTIONS'.split(' ');
 
 //
@@ -23,7 +24,7 @@ RequestBuilder.join = urlJoin;
 settings.mixInto(RequestBuilder.prototype);
 
 RequestBuilder.prototype._rawHttp = function (options) {
-  return http(options);
+  return request(options);
 };
 
 RequestBuilder.prototype.promise = function (callback) {
@@ -31,33 +32,31 @@ RequestBuilder.prototype.promise = function (callback) {
 };
 
 RequestBuilder.prototype.http = function (method) {
-  var instance = this;
-  var args = asArray(arguments);
-  var url = rest(args).join('/');
+  var rawHttp = this._rawHttp;
   
-  // New request object
-  var request = function (params) {
-    if (request.origin()) url = RequestBuilder.join(request.origin(), url);
-    
-    var requestObject = {
-      url: url,
+  // New resource object
+  var resource = function (params) {
+    var resourceObject = {
+      url: resource.url(),
       method: method,
-      headers: request.headers,
+      headers: resource.headers,
       form: params
     };
     
-    extend(requestObject, request.xhrOptions || {});
+    extend(resourceObject, resource.xhrOptions || {});
     
-    return instance._rawHttp(requestObject);
+    return rawHttp(resourceObject);
   };
   
-  request._builderInstance = instance;
-  request.attributes = clone(instance.attributes);
-  request.headers = clone(instance.headers);
-  request.xhrOptions = clone(instance.xhrOptions);
-  settings.mixInto(request);
+  resource._uri = rest(asArray(arguments)).join('/');
+  resource._builderInstance = this;
+  resource.attributes = clone(this.attributes);
+  resource.headers = clone(this.headers);
+  resource.xhrOptions = clone(this.xhrOptions);
+  resource.queries = clone(this.queries);
+  settings.mixInto(resource);
   
-  return request;
+  return resource;
 };
 
 // Create help http verb functions
@@ -78,6 +77,7 @@ function rest (arr) {
 module.exports = RequestBuilder;
 },{"./lib/settings":2,"./lib/url-join":3,"as-array":4,"deap":7,"httpify":10,"promise":20}],2:[function(_dereq_,module,exports){
 var mix = _dereq_('mix-into');
+var join = _dereq_('./url-join');
 
 // Settings mixin
 module.exports = mix({
@@ -103,9 +103,46 @@ module.exports = mix({
     
     this.xhrOptions[name] = value;
     return this;
+  },
+  
+  query: function (name, value) {
+    if (!this.queries) this.queries = {};
+    
+    // Parse query string
+    if (!name && !value) {
+      var qs = [];
+      
+      Object
+        .keys(this.queries)
+        .forEach(function (key) {
+          var value = this.query(key);
+          
+          if (value) qs.push(key + '=' + this.query(key));
+        }, this);
+      
+      return qs.join('&');
+    }
+    
+    if (!value) return this.queries[name];
+    
+    this.queries[name] = value;
+    return this;
+  },
+  
+  url: function () {
+    var url = this._uri;
+    if (this.origin()) url = join(this.origin(), this._uri);
+    
+    // Add query string
+    if (Object.keys(this.queries || {}).length > 0) {
+      var connector = (url.indexOf('?') > -1) ? '&' : '?';
+      url = url + connector + this.query();
+    }
+    
+    return url || '/';
   }
 });
-},{"mix-into":15}],3:[function(_dereq_,module,exports){
+},{"./url-join":3,"mix-into":15}],3:[function(_dereq_,module,exports){
 function normalize (str) {
   return str
           .replace(/[\/]+/g, '/')

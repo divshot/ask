@@ -31,16 +31,12 @@ RequestBuilder.prototype.promise = function (callback) {
 };
 
 RequestBuilder.prototype.http = function (method) {
-  var instance = this;
-  var args = asArray(arguments);
-  var url = rest(args).join('/');
+  var rawHttp = this._rawHttp;
   
   // New resource object
   var resource = function (params) {
-    if (resource.origin()) url = RequestBuilder.join(resource.origin(), url);
-    
     var resourceObject = {
-      url: url,
+      url: resource.url(),
       method: method,
       headers: resource.headers,
       form: params
@@ -48,13 +44,15 @@ RequestBuilder.prototype.http = function (method) {
     
     extend(resourceObject, resource.xhrOptions || {});
     
-    return instance._rawHttp(resourceObject);
+    return rawHttp(resourceObject);
   };
   
-  resource._builderInstance = instance;
-  resource.attributes = clone(instance.attributes);
-  resource.headers = clone(instance.headers);
-  resource.xhrOptions = clone(instance.xhrOptions);
+  resource._uri = rest(asArray(arguments)).join('/');
+  resource._builderInstance = this;
+  resource.attributes = clone(this.attributes);
+  resource.headers = clone(this.headers);
+  resource.xhrOptions = clone(this.xhrOptions);
+  resource.queries = clone(this.queries);
   settings.mixInto(resource);
   
   return resource;
