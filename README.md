@@ -36,8 +36,8 @@ Simple `GET` request
 
 ```js
 var request = new RequestBuilder({
-	origin: '', /* default origin */
-	headers: {/* set default headers */},
+  origin: '', /* default origin */
+  headers: {/* set default headers */},
   xhrOptions: {/* default xhr options */
 });
 
@@ -72,7 +72,7 @@ var createUser = reqest.post('users');
 
 // Send body data with request
 createUser({
-	name: 'example',
+  name: 'example',
   email: 'something@aol.com'
 }).then(function (res) {
 	// Success!
