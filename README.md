@@ -28,6 +28,15 @@ Nodejs/Browserify
 var builder = require('request-builder');
 ```
 
+## Build
+
+Builds standalone and Angular version of the module
+
+```
+npm install
+npm run build
+```
+
 ## Run Tests
 
 ```
