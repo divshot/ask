@@ -65,6 +65,28 @@ describe('setting options', function () {
     });
   });
   
+  it('aliases origin with host', function () {
+    var requester = request.get('test')
+      .host(host);
+    
+    return requester().then(function (res) {
+      expect(res.body.url).to.equal('/test');
+    });
+  });
+  
+  it('sets the header for the request', function () {
+    var requester = request
+      .get('test')
+      .host(host)
+      .header('Authorization', 'Bearer 1234');
+      
+    return requester().then(function (res) {
+      expect(res.body.headers.authorization).to.equal('Bearer 1234')
+    });
+  });
+  
+  
+  
 });
 
 

@@ -6,6 +6,7 @@ var httpMethods = 'GET POST PUT DELETE PATCH OPTIONS'.split(' ');
 
 function RequestBuilder () {
   this.attributes = {};
+  this.headers = {};
 }
 
 RequestBuilder.httpMethods = httpMethods;
@@ -36,12 +37,14 @@ RequestBuilder.prototype.http = function (method) {
   var args = asArray(arguments);
   var url = join(args.slice(1).join('/'));
   
+  //
   var request = function () {
     if (instance.attributes.origin) url = join(instance.attributes.origin, url);
     
     return instance._rawHttp({
       url: url,
-      method: method
+      method: method,
+      headers: instance.headers
     });
   };
   
@@ -49,6 +52,13 @@ RequestBuilder.prototype.http = function (method) {
   
   request.origin = function (origin) {
     instance.attributes.origin = origin;
+    return request;
+  };
+  
+  request.host = request.origin;
+  
+  request.header = function (name, value) {
+    instance.headers[name] = value;
     return request;
   };
   
