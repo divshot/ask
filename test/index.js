@@ -2,9 +2,9 @@ var expect = require('expect.js');
 var Mocksy = require('mocksy');
 var server = new Mocksy({port: 9876});
 var RequestBuilder = require('../index.js');
+var host = 'http://localhost:9876';
 
 describe('making bare requests', function () {
-  var host = 'http://localhost:9876';
   var request;
   
   beforeEach(function (done) {
@@ -17,7 +17,7 @@ describe('making bare requests', function () {
   });
   
   it('makes a request with a given http method', function () {
-    var apps = request('GET', host, 'apps');
+    var apps = request.http('GET', host, 'apps');
     
     return apps().then(function (res) {
       expect(res.body.method).to.equal('GET');
@@ -37,6 +37,31 @@ describe('making bare requests', function () {
         expect(res.body.method).to.equal(method);
         expect(res.body.url).to.equal('/requester/123');
       });
+    });
+  });
+  
+  it('defaults to a get request');
+  
+});
+
+describe('setting options', function () {
+  var request;
+  
+  beforeEach(function (done) {
+    request = new RequestBuilder();
+    server.start(done);
+  });
+  
+  afterEach(function (done) {
+    server.stop(done);
+  });
+  
+  it('sets the request origin', function () {
+    var requester = request.get('test')
+      .origin(host);
+    
+    return requester().then(function (res) {
+      expect(res.body.url).to.equal('/test');
     });
   });
   
