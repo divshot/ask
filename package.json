@@ -29,9 +29,14 @@
   "devDependencies": {
     "browserify": "^3.43.0",
     "mocha": "^1.18.2",
-    "expect.js": "^0.3.1"
+    "expect.js": "^0.3.1",
+    "mocksy": "^0.1.7"
   },
   "dependencies": {
-    "httpify": "^0.3.1"
+    "httpify": "^0.3.1",
+    "as-array": "^0.1.2",
+    "slasher": "^0.1.4",
+    "url-join": "0.0.1",
+    "promise": "^4.0.0"
   }
 }

@@ -25,7 +25,7 @@ Standalone
 Nodejs/Browserify
 
 ```js
-var request = require('request-builder');
+var builder = require('request-builder');
 ```
 
 ## Run Tests
