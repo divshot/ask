@@ -1,12 +1,14 @@
 var expect = require('expect.js');
 var Mocksy = require('mocksy');
 var server = new Mocksy({port: 9876});
-var request = require('../index.js');
+var RequestBuilder = require('../index.js');
 
 describe('making bare requests', function () {
   var host = 'http://localhost:9876';
+  var request;
   
   beforeEach(function (done) {
+    request = new RequestBuilder();
     server.start(done);
   });
   
@@ -24,28 +26,22 @@ describe('making bare requests', function () {
   });
   
   // Helpers
-  request._httpMethods.forEach(function (method) {
+  RequestBuilder.httpMethods.forEach(function (method) {
+    
+    // EXAMPLE: request.get('url', 123)
+    
     it('makes a ' + method + ' request', function () {
-      var requester = request[method.toLowerCase()](host, 'requester');
+      var requester = request[method.toLowerCase()](host, 'requester', 123);
       
       return requester().then(function (res) {
         expect(res.body.method).to.equal(method);
-        expect(res.body.url).to.equal('/requester');
+        expect(res.body.url).to.equal('/requester/123');
       });
     });
   });
   
 });
 
-
-// request()
-// request.get()
-// request.post()
-// request.put()
-// request.delete()
-// request.patch()
-// request.head()
-// request.options()
 
 
 // var getApps = request.get('apps')
