@@ -69,7 +69,7 @@ describe('making bare requests', function () {
   });
   
   // Helpers
-  RequestBuilder.httpMethods.forEach(function (method) {
+  RequestBuilder.HTTP_METHODS.forEach(function (method) {
     
     // EXAMPLE: request.get('url', 123)
     
@@ -145,7 +145,42 @@ describe('setting options', function () {
     });
   });
   
-  it('sets the default settings from the instance on the request');
+  it('sets the default settings from the instance on the request', function () {
+    request
+      .origin(host)
+      .header('Authorization', 'Bearer 1234');
+    
+    var test = request.get('test');
+    
+    expect(test.origin()).to.equal(request.origin());
+    expect(test.header('Authorization')).to.equal(request.header('Authorization'));
+  });
+  
+  it('changing endpoint request settings does not modify the state of the instance', function () {
+    var TEST_ORIGIN = 'http://localhost:1234';
+    
+    // Instance
+    request
+      .origin(host)
+      .xhrOption('method', 'POST')
+      .header('Authorization', 'Bearer 1234');
+    
+    // Endpoint
+    var test = request
+      .get('test')
+      .origin(TEST_ORIGIN)
+      .xhrOption('method', 'GET')
+      .header('Authorization', 'Session 1234');
+      
+    expect(request.xhrOption('method')).to.equal('POST');
+    expect(test.xhrOption('method')).to.equal('GET');
+    
+    expect(request.header('Authorization')).to.equal('Bearer 1234');
+    expect(test.header('Authorization')).to.equal('Session 1234');
+    
+    expect(request.origin()).to.equal(host);
+    expect(test.origin()).to.equal(TEST_ORIGIN);
+  });
   
   // FROM: Collin
   // 
@@ -157,15 +192,3 @@ describe('setting options', function () {
   // });
   
 });
-
-
-
-// var getApps = request.get('apps')
-//   .origin('https://api.divshot.com')
-//   .header('Authorization', 'Session asdfwefon2o3f23uf');
-
-// var getApps = request('GET', 'apps');
-
-// getApps().then(function (apps) {
-  
-// });

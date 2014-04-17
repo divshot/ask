@@ -2,8 +2,9 @@ var asArray = require('as-array');
 var http = require('httpify');
 var join = require('url-join');
 var Promise = require('promise');
-var httpMethods = 'GET POST PUT DELETE PATCH OPTIONS'.split(' ');
-var extend = require('extend');
+var extend = require('xtend');
+var clone = require('clone');
+var HTTP_METHODS = 'GET POST PUT DELETE PATCH OPTIONS'.split(' ');
 
 function RequestBuilder () {
   this.attributes = {};
@@ -11,7 +12,7 @@ function RequestBuilder () {
   this.xhrOptions = {};
 }
 
-RequestBuilder.httpMethods = httpMethods;
+RequestBuilder.HTTP_METHODS = HTTP_METHODS;
 
 RequestBuilder.prototype._rawHttp = function (options) {
   return this.promise(function (resolve, reject) {
@@ -46,20 +47,22 @@ RequestBuilder.prototype.http = function (method) {
     var requestObject = {
       url: url,
       method: method,
-      headers: instance.headers
+      headers: request.headers
     };
     
-    extend(requestObject, instance.xhrOptions);
+    requestObject = extend(requestObject, request.xhrOptions);
     
     return instance._rawHttp(requestObject);
   };
   
   request._builderInstance = instance;
-  request.attributes = instance.attributes;
-  request.headers = instance.headers;
-  request.xhrOptions = instance.xhrOptions;
+  request.attributes = clone(instance.attributes);
+  request.headers = clone(instance.headers);
+  request.xhrOptions = clone(instance.xhrOptions);
   
   request.origin = function (origin) {
+    if (!origin) return this.attributes.origin;
+    
     request.attributes.origin = origin;
     return request;
   };
@@ -67,11 +70,15 @@ RequestBuilder.prototype.http = function (method) {
   request.host = request.origin;
   
   request.header = function (name, value) {
+    if (!value) return request.headers[name];
+    
     request.headers[name] = value;
     return request;
   };
   
   request.xhrOption = function (name, value) {
+    if (!value) return request.xhrOptions[name];
+    
     request.xhrOptions[name] = value;
     return request;
   };
@@ -80,7 +87,7 @@ RequestBuilder.prototype.http = function (method) {
 };
 
 // Create help http verb functions
-RequestBuilder.httpMethods.forEach(function (method) {
+RequestBuilder.HTTP_METHODS.forEach(function (method) {
   RequestBuilder.prototype[method.toLowerCase()] = function () {
     var args = asArray(arguments);
     args.unshift(method);
@@ -90,16 +97,22 @@ RequestBuilder.httpMethods.forEach(function (method) {
 });
 
 RequestBuilder.prototype.origin = function (origin) {
+  if (!origin) return this.attributes.origin;
+  
   this.attributes.origin = origin;
   return this;
 };
 
 RequestBuilder.prototype.header = function (name, value) {
+  if (!value) return this.headers[name];
+  
   this.headers[name] = value;
   return this;
 };
 
 RequestBuilder.prototype.xhrOption = function (name, value) {
+  if (!value) return this.xhrOptions[name];
+  
   this.xhrOptions[name] = value;
   return this;
 };
