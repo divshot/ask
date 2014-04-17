@@ -14,7 +14,7 @@ function RequestBuilder () {
     // This allows the developer to return a method and
     // still have access to the request builder instance
     return function () {
-      return this._http({
+      return this.http({
         url: url,
         method: method
       });
@@ -27,17 +27,17 @@ function RequestBuilder () {
       var args = asArray(arguments);
       args.unshift(method);
       
-      return requestObject.apply(instance, args);
+      return requestObject.apply(this, args);
     };
-  });
+  }, this);
   
   return requestObject;
 }
 
 RequestBuilder.httpMethods = 'GET POST PUT DELETE PATCH OPTIONS'.split(' ');
 
-RequestBuilder.prototype._http = function (options) {
-  return new Promise(function (resolve, reject) {
+RequestBuilder.prototype.http = function (options) {
+  return this.promise(function (resolve, reject) {
     http(options, function (err, response, body) {
       if (err) return reject(err);
       
@@ -51,6 +51,10 @@ RequestBuilder.prototype._http = function (options) {
       }
     });
   });
+};
+
+RequestBuilder.prototype.promise = function (callback) {
+  return new Promise(callback);
 };
 
 module.exports = RequestBuilder;
