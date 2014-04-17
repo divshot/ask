@@ -1,11 +1,13 @@
 var asArray = require('as-array');
 var http = require('httpify');
-var join = require('url-join');
+var urlJoin = require('./lib/url-join');
 var Promise = require('promise');
 var extend = require('xtend');
 var clone = require('clone');
+var settings = require('./lib/settings');
 var HTTP_METHODS = 'GET POST PUT DELETE PATCH OPTIONS'.split(' ');
 
+//
 function RequestBuilder () {
   this.attributes = {};
   this.headers = {};
@@ -13,6 +15,8 @@ function RequestBuilder () {
 }
 
 RequestBuilder.HTTP_METHODS = HTTP_METHODS;
+RequestBuilder.join = urlJoin;
+settings.mixInto(RequestBuilder.prototype);
 
 RequestBuilder.prototype._rawHttp = function (options) {
   return this.promise(function (resolve, reject) {
@@ -37,6 +41,7 @@ RequestBuilder.prototype.promise = function (callback) {
 
 RequestBuilder.prototype.http = function (method) {
   var instance = this;
+  var join = RequestBuilder.join;
   var args = asArray(arguments);
   var url = join(args.slice(1).join('/'));
   
@@ -59,29 +64,7 @@ RequestBuilder.prototype.http = function (method) {
   request.attributes = clone(instance.attributes);
   request.headers = clone(instance.headers);
   request.xhrOptions = clone(instance.xhrOptions);
-  
-  request.origin = function (origin) {
-    if (!origin) return this.attributes.origin;
-    
-    request.attributes.origin = origin;
-    return request;
-  };
-  
-  request.host = request.origin;
-  
-  request.header = function (name, value) {
-    if (!value) return request.headers[name];
-    
-    request.headers[name] = value;
-    return request;
-  };
-  
-  request.xhrOption = function (name, value) {
-    if (!value) return request.xhrOptions[name];
-    
-    request.xhrOptions[name] = value;
-    return request;
-  };
+  settings.mixInto(request);
   
   return request;
 };
@@ -95,27 +78,6 @@ RequestBuilder.HTTP_METHODS.forEach(function (method) {
     return this.http.apply(this, args);
   };
 });
-
-RequestBuilder.prototype.origin = function (origin) {
-  if (!origin) return this.attributes.origin;
-  
-  this.attributes.origin = origin;
-  return this;
-};
-
-RequestBuilder.prototype.header = function (name, value) {
-  if (!value) return this.headers[name];
-  
-  this.headers[name] = value;
-  return this;
-};
-
-RequestBuilder.prototype.xhrOption = function (name, value) {
-  if (!value) return this.xhrOptions[name];
-  
-  this.xhrOptions[name] = value;
-  return this;
-};
 
 //
 module.exports = RequestBuilder;

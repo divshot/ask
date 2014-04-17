@@ -111,20 +111,10 @@ describe('setting options', function () {
     });
   });
   
-  it('aliases origin with host', function () {
-    var requester = request
-      .get('test')
-      .host(host);
-    
-    return requester().then(function (res) {
-      expect(res.body.url).to.equal('/test');
-    });
-  });
-  
   it('sets the header for the request', function () {
     var requester = request
       .get('test')
-      .host(host)
+      .origin(host)
       .header('Authorization', 'Bearer 1234');
       
     return requester().then(function (res) {
@@ -135,7 +125,7 @@ describe('setting options', function () {
   it('sets an xhr options for the request', function () {
     var requester = request
       .get('test')
-      .host(host)
+      .origin(host)
       .xhrOption('method', 'POST')
       .xhrOption('form', {test: 'test'});
       
