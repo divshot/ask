@@ -71,6 +71,7 @@ describe('making bare requests', function () {
 
 describe('setting options', function () {
   var request;
+  var requester;
   
   beforeEach(function (done) {
     request = new RequestBuilder();
@@ -81,6 +82,13 @@ describe('setting options', function () {
     server.stop(done);
   });
   
+  it('does not modify state', function() {
+    var requester = request.http();
+    var requester2 = requester.origin('host1');
+    var requester3 = requester2.origin('host2');
+    expect(requester2._builderInstance.attributes.origin).to.equal('host1');
+  });
+
   it('sets the request origin', function () {
     var requester = request
       .get('test')
