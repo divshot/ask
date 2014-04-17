@@ -3,10 +3,12 @@ var http = require('httpify');
 var join = require('url-join');
 var Promise = require('promise');
 var httpMethods = 'GET POST PUT DELETE PATCH OPTIONS'.split(' ');
+var extend = require('extend');
 
 function RequestBuilder () {
   this.attributes = {};
   this.headers = {};
+  this.xhrOptions = {};
 }
 
 RequestBuilder.httpMethods = httpMethods;
@@ -41,11 +43,15 @@ RequestBuilder.prototype.http = function (method) {
   var request = function () {
     if (instance.attributes.origin) url = join(instance.attributes.origin, url);
     
-    return instance._rawHttp({
+    var requestObject = {
       url: url,
       method: method,
       headers: instance.headers
-    });
+    };
+    
+    extend(requestObject, instance.xhrOptions);
+    
+    return instance._rawHttp(requestObject);
   };
   
   request._builderInstance = instance;
@@ -59,6 +65,11 @@ RequestBuilder.prototype.http = function (method) {
   
   request.header = function (name, value) {
     instance.headers[name] = value;
+    return request;
+  };
+  
+  request.xhrOption = function (name, value) {
+    instance.xhrOptions[name] = value;
     return request;
   };
   

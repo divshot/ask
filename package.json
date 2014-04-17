@@ -39,7 +39,8 @@
     "as-array": "^0.1.2",
     "slasher": "^0.1.4",
     "url-join": "0.0.1",
-    "promise": "^4.0.0"
+    "promise": "^4.0.0",
+    "extend": "^1.2.1"
   },
   "jshintConfig": {
     "expr": true,

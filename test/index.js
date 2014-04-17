@@ -85,7 +85,18 @@ describe('setting options', function () {
     });
   });
   
-  
+  it('sets an xhr options for the request', function () {
+    var requester = request
+      .get('test')
+      .host(host)
+      .xhrOption('method', 'POST')
+      .xhrOption('form', {test: 'test'});
+      
+    return requester().then(function (res) {
+      expect(res.body.method).to.equal('POST');
+      expect(res.body.body).to.eql({test: 'test'});
+    });
+  });
   
 });
 
