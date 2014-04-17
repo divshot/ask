@@ -41,6 +41,7 @@ describe('making bare requests', function () {
   });
   
   it('defaults to a get request');
+  it('passes body parameters to various methods');
   
 });
 
@@ -57,7 +58,8 @@ describe('setting options', function () {
   });
   
   it('sets the request origin', function () {
-    var requester = request.get('test')
+    var requester = request
+      .get('test')
       .origin(host);
     
     return requester().then(function (res) {
@@ -66,7 +68,8 @@ describe('setting options', function () {
   });
   
   it('aliases origin with host', function () {
-    var requester = request.get('test')
+    var requester = request
+      .get('test')
       .host(host);
     
     return requester().then(function (res) {
