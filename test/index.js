@@ -16,6 +16,22 @@ describe('request instance', function () {
     server.stop(done);
   });
   
+  it('sets defaults in the contructor', function () {
+    request = new RequestBuilder({
+      origin: host,
+      headers: {
+        'Authorization': 'Bearer 1234'
+      },
+      xhrOptions: {
+        'method': 'POST'
+      }
+    });
+    
+    expect(request.origin()).to.equal(host);
+    expect(request.header('Authorization')).to.equal('Bearer 1234');
+    expect(request.xhrOption('method')).to.equal('POST');
+  });
+  
   it('sets the default origin for all http requests on the instance', function () {
     request.origin(host);
     

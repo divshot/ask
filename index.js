@@ -8,10 +8,12 @@ var settings = require('./lib/settings');
 var HTTP_METHODS = 'GET POST PUT DELETE PATCH OPTIONS'.split(' ');
 
 //
-function RequestBuilder () {
-  this.attributes = {};
-  this.headers = {};
-  this.xhrOptions = {};
+function RequestBuilder (options) {
+  if (!options) options = {};
+  
+  this.origin(options.origin);
+  this.headers = clone(options.headers);
+  this.xhrOptions = clone(options.xhrOptions);
 }
 
 RequestBuilder.HTTP_METHODS = HTTP_METHODS;
@@ -46,7 +48,7 @@ RequestBuilder.prototype.http = function (method) {
   
   // New request object
   var request = function () {
-    if (request.attributes.origin) url = RequestBuilder.join(request.attributes.origin, url);
+    if (request.origin()) url = RequestBuilder.join(request.origin(), url);
     
     var requestObject = {
       url: url,
