@@ -148,6 +148,7 @@ describe('setting options', function () {
   
   it('changing endpoint request settings does not modify the state of the instance', function () {
     var TEST_ORIGIN = 'http://localhost:1234';
+    var TEST_ORIGIN2 = 'http://localhost:8888';
     
     // Instance
     request
@@ -161,6 +162,10 @@ describe('setting options', function () {
       .origin(TEST_ORIGIN)
       .xhrOption('method', 'GET')
       .header('Authorization', 'Session 1234');
+    
+    var test2 = request
+      .get('test2')
+      .origin(TEST_ORIGIN2);
       
     expect(request.xhrOption('method')).to.equal('POST');
     expect(test.xhrOption('method')).to.equal('GET');
@@ -170,6 +175,7 @@ describe('setting options', function () {
     
     expect(request.origin()).to.equal(host);
     expect(test.origin()).to.equal(TEST_ORIGIN);
+    expect(test2.origin()).to.equal(TEST_ORIGIN2);
   });
   
   // FROM: Collin
