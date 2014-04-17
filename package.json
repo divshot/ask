@@ -10,7 +10,6 @@
     "test": "npm run lint && mocha test/**/*.js --reporter spec",
     "lint": "jshint index.js lib/",
     "build": "npm test && npm run bundle-standalone",
-    
     "bundle-standalone": "build/standalone.js"
   },
   "repository": {
@@ -36,11 +35,12 @@
     "expect.js": "~0.3.1",
     "mocksy": "~0.1.7",
     "jshint": "~2.5.0",
-    "minify": "^0.2.6",
-    "mkdirp": "^0.3.5"
+    "minify": "~0.2.6",
+    "mkdirp": "~0.3.5",
+    "testling": "~1.6.1"
   },
   "dependencies": {
-    "httpify": "~0.3.1",
+    "httpify": "~0.4.0",
     "as-array": "~0.1.2",
     "slasher": "~0.1.4",
     "promise": "~4.0.0",

@@ -1,11 +1,12 @@
 var asArray = require('as-array');
-var http = require('httpify');
+var request = require('httpify');
 var urlJoin = require('./lib/url-join');
 var Promise = require('promise');
 var deap = require('deap');
 var clone = deap.clone;
 var extend = deap.extend;
 var settings = require('./lib/settings');
+
 var HTTP_METHODS = 'GET POST PUT DELETE PATCH OPTIONS'.split(' ');
 
 //
@@ -22,21 +23,7 @@ RequestBuilder.join = urlJoin;
 settings.mixInto(RequestBuilder.prototype);
 
 RequestBuilder.prototype._rawHttp = function (options) {
-  return this.promise(function (resolve, reject) {
-    http(options, function (err, response, body) {
-      if (err) return reject(err);
-      
-      try{
-        response.body = JSON.parse(body);
-      }
-      finally{
-        // TODO: move this into httpify module
-        if (response.statusCode >= 400 && response.statusCode < 600) return reject(response);
-        
-        resolve(response);
-      }
-    });
-  });
+  return request(options);
 };
 
 RequestBuilder.prototype.promise = function (callback) {
@@ -48,29 +35,29 @@ RequestBuilder.prototype.http = function (method) {
   var args = asArray(arguments);
   var url = rest(args).join('/');
   
-  // New request object
-  var request = function (params) {
-    if (request.origin()) url = RequestBuilder.join(request.origin(), url);
+  // New resource object
+  var resource = function (params) {
+    if (resource.origin()) url = RequestBuilder.join(resource.origin(), url);
     
-    var requestObject = {
+    var resourceObject = {
       url: url,
       method: method,
-      headers: request.headers,
+      headers: resource.headers,
       form: params
     };
     
-    extend(requestObject, request.xhrOptions || {});
+    extend(resourceObject, resource.xhrOptions || {});
     
-    return instance._rawHttp(requestObject);
+    return instance._rawHttp(resourceObject);
   };
   
-  request._builderInstance = instance;
-  request.attributes = clone(instance.attributes);
-  request.headers = clone(instance.headers);
-  request.xhrOptions = clone(instance.xhrOptions);
-  settings.mixInto(request);
+  resource._builderInstance = instance;
+  resource.attributes = clone(instance.attributes);
+  resource.headers = clone(instance.headers);
+  resource.xhrOptions = clone(instance.xhrOptions);
+  settings.mixInto(resource);
   
-  return request;
+  return resource;
 };
 
 // Create help http verb functions

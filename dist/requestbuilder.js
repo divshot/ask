@@ -3,8 +3,9 @@ var asArray = _dereq_('as-array');
 var http = _dereq_('httpify');
 var urlJoin = _dereq_('./lib/url-join');
 var Promise = _dereq_('promise');
-var clone = _dereq_('deap').clone;
-var extend = _dereq_('deap').extend;
+var deap = _dereq_('deap');
+var clone = deap.clone;
+var extend = deap.extend;
 var settings = _dereq_('./lib/settings');
 var HTTP_METHODS = 'GET POST PUT DELETE PATCH OPTIONS'.split(' ');
 
@@ -22,21 +23,7 @@ RequestBuilder.join = urlJoin;
 settings.mixInto(RequestBuilder.prototype);
 
 RequestBuilder.prototype._rawHttp = function (options) {
-  return this.promise(function (resolve, reject) {
-    http(options, function (err, response, body) {
-      if (err) return reject(err);
-      
-      try{
-        response.body = JSON.parse(body);
-      }
-      finally{
-        // TODO: move this into httpify module
-        if (response.statusCode >= 400 && response.statusCode < 600) return reject(response);
-        
-        resolve(response);
-      }
-    });
-  });
+  return http(options);
 };
 
 RequestBuilder.prototype.promise = function (callback) {
@@ -407,8 +394,38 @@ module.exports = function(obj) {
 };
 
 },{}],10:[function(_dereq_,module,exports){
-module.exports = _dereq_('request');
-},{"request":11}],11:[function(_dereq_,module,exports){
+var Promise = _dereq_('promise');
+var request = _dereq_('request');
+
+module.exports = function (options, callback) {
+  return new Promise(function (resolve, reject) {
+    request(options, function (err, response, body) {
+      var status = (response) ? response.statusCode : 0;
+      callback = callback || function () {};
+      
+      if (err) {
+        callback(err);
+        reject(err);
+        return 
+      }
+      
+      if (status >= 400 && status < 600) {
+        callback(null, response);
+        reject(response);
+        return
+      }
+      
+      try{
+        response.body = JSON.parse(body);
+      }
+      catch (e) {}
+      
+      callback(null, response);
+      resolve(response);
+    });
+  });
+};
+},{"promise":20,"request":11}],11:[function(_dereq_,module,exports){
 var request = _dereq_('xhr');
 
 // Wrapper to make the features more similiar between
