@@ -85,14 +85,19 @@ module.exports = function ($http, $q) {
     if (requestOptions.form) requestOptions.data = requestOptions.form;
     if (requestOptions.type) requestOptions.responseType = requestOptions.type;
     
-    $http(requestOptions).success(function (res) {
-      d.resolve(res);
-    }).error(function (err) {
-      d.reject(err);
-    });
+    $http(requestOptions)
+      .then(function (data) {
+        data.statusCode = data.status;
+        data.body = data.data;
+        d.resolve(data);
+      }, function (data) {
+        data.statusCode = data.status;
+        data.body = data.data;
+        d.reject(data);
+      });
     
     return d.promise;
-};
+  };
 };
 },{}],3:[function(require,module,exports){
 'use strict';
@@ -115,11 +120,11 @@ angular.module('requestBuilder', [])
         this._options = options;
       },
       
-      $get: function ($q, $http) {
+      $get: function ($rootScope, $q, $http) {
         if (!client) {
           client = new RequestBuilder(this._options);
           
-          client._rawHttp = angularRequest($http, $q);
+          client._rawHttp = angularRequest($http, $q, $rootScope);
           client.promise = angularPromise($q);
         }
         
@@ -141,9 +146,9 @@ module.exports = function ($q) {
     var d = $q.defer();
     
     callback(function (data) {
-        d.resolve(data);
+      d.resolve(data);
     }, function (err) {
-        d.reject(err);
+      d.reject(err);
     });
     
     return d.promise;
@@ -504,10 +509,4 @@ function mixInto (source) {
 }
 
 module.exports = mix;
-},{"deap":14}],14:[function(require,module,exports){
-module.exports=require(10)
-},{"./lib/deap":15}],15:[function(require,module,exports){
-module.exports=require(11)
-},{"./typeof":16}],16:[function(require,module,exports){
-module.exports=require(12)
-},{}]},{},[3])
+},{"deap":10}]},{},[3])

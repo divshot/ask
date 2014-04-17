@@ -41,11 +41,11 @@ Angular
 ```js
 var myApp = angular.module('myApp', ['requestBuilder']);
 
-myApp.config(function (requestBuilderProvider) {
+myApp.config(function (requestProvider) {
   
   /* This is optional */
   
-  requestBuilderProvider.configure({
+  requestProvider.configure({
     origin: 'http://api.example.com',
     headers: {/* optional default headers */},
     xhrOptions: {/* optional xhr options */}

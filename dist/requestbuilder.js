@@ -75,7 +75,7 @@ function rest (arr) {
 
 //
 module.exports = RequestBuilder;
-},{"./lib/settings":2,"./lib/url-join":3,"as-array":4,"deap":7,"httpify":10,"promise":20}],2:[function(_dereq_,module,exports){
+},{"./lib/settings":2,"./lib/url-join":3,"as-array":4,"deap":7,"httpify":10,"promise":17}],2:[function(_dereq_,module,exports){
 var mix = _dereq_('mix-into');
 var join = _dereq_('./url-join');
 var extend = _dereq_('deap').extend;
@@ -477,7 +477,7 @@ module.exports = function (options, callback) {
     });
   });
 };
-},{"promise":20,"request":11}],11:[function(_dereq_,module,exports){
+},{"promise":17,"request":11}],11:[function(_dereq_,module,exports){
 var request = _dereq_('xhr');
 
 // Wrapper to make the features more similiar between
@@ -698,13 +698,7 @@ function mixInto (source) {
 }
 
 module.exports = mix;
-},{"deap":16}],16:[function(_dereq_,module,exports){
-module.exports=_dereq_(7)
-},{"./lib/deap":17}],17:[function(_dereq_,module,exports){
-module.exports=_dereq_(8)
-},{"./typeof":18}],18:[function(_dereq_,module,exports){
-module.exports=_dereq_(9)
-},{}],19:[function(_dereq_,module,exports){
+},{"deap":7}],16:[function(_dereq_,module,exports){
 'use strict';
 
 var asap = _dereq_('asap')
@@ -811,7 +805,7 @@ function doResolve(fn, onFulfilled, onRejected) {
   }
 }
 
-},{"asap":21}],20:[function(_dereq_,module,exports){
+},{"asap":18}],17:[function(_dereq_,module,exports){
 'use strict';
 
 //This file contains then/promise specific extensions to the core promise API
@@ -985,7 +979,7 @@ Promise.race = function (values) {
   });
 }
 
-},{"./core.js":19,"asap":21}],21:[function(_dereq_,module,exports){
+},{"./core.js":16,"asap":18}],18:[function(_dereq_,module,exports){
 (function (process){
 
 // Use the fastest possible means to execute a task in a future turn
