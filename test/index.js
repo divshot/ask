@@ -52,6 +52,20 @@ describe('request instance', function () {
     });
   });
   
+  it('sets multiple headers from an object', function () {
+    request
+      .origin(ORIGIN)
+      .header({
+        'Authorization': 'Bearer 1234',
+        'Content-Type': 'text/html'
+      });
+    
+    return request.get('test')().then(function (res) {
+      expect(res.body.headers.authorization).to.equal('Bearer 1234');
+      expect(res.body.headers['content-type']).to.equal('text/html');
+    });
+  });
+  
   it('sets the default xhr options for all http requests on the instance', function () {
     request
       .origin(ORIGIN)

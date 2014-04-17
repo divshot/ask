@@ -27,7 +27,7 @@ Standalone
 Nodejs/Browserify
 
 ```js
-var builder = require('request-builder');
+var request = require('request-builder');
 ```
 
 ### Build Requests
@@ -49,12 +49,13 @@ request
 
 // Create an endpoint and customize with endpoint-specific settings
 // Returns a function to execute later
-var getAllUsers = request
-  .get('users')
+var getUserFriends = request
+  .get('users', 123, 'friends')
   .query('page', 1)
   .query('limit', 10);
 
-getAllUsers().then(function (res) {
+// Request to '/users/123/friends'
+getUserFriends().then(function (res) {
   var users = res.body;
 }, function (err) {
   // err.body

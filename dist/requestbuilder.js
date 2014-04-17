@@ -78,6 +78,7 @@ module.exports = RequestBuilder;
 },{"./lib/settings":2,"./lib/url-join":3,"as-array":4,"deap":7,"httpify":10,"promise":20}],2:[function(_dereq_,module,exports){
 var mix = _dereq_('mix-into');
 var join = _dereq_('./url-join');
+var extend = _dereq_('deap').extend;
 
 // Settings mixin
 module.exports = mix({
@@ -91,17 +92,15 @@ module.exports = mix({
   
   header: function (name, value) {
     if (!this.headers) this.headers = {};
-    if (!value) return this.headers[name];
+    
+    if (typeof name === 'object') {
+      extend(this.headers, name);
+      return this;
+    }
+    
+    if (name && !value) return this.headers[name];
     
     this.headers[name] = value;
-    return this;
-  },
-  
-  xhrOption: function (name, value) {
-    if (!this.xhrOptions) this.xhrOptions = {};
-    if (!value) return this.xhrOptions[name];
-    
-    this.xhrOptions[name] = value;
     return this;
   },
   
@@ -109,23 +108,25 @@ module.exports = mix({
     if (!this.queries) this.queries = {};
     
     // Parse query string
-    if (!name && !value) {
-      var qs = [];
-      
-      Object
-        .keys(this.queries)
-        .forEach(function (key) {
-          var value = this.query(key);
-          
-          if (value) qs.push(key + '=' + this.query(key));
-        }, this);
-      
-      return qs.join('&');
+    if (!name && !value) return parseQueryString(this.queries);
+    
+    // Add values from an object
+    if (typeof name === 'object') {
+      extend(this.queries, name);
+      return this;
     }
     
-    if (!value) return this.queries[name];
+    if (name && !value) return this.queries[name];
     
     this.queries[name] = value;
+    return this;
+  },
+  
+  xhrOption: function (name, value) {
+    if (!this.xhrOptions) this.xhrOptions = {};
+    if (name && !value) return this.xhrOptions[name];
+    
+    this.xhrOptions[name] = value;
     return this;
   },
   
@@ -142,7 +143,21 @@ module.exports = mix({
     return url || '/';
   }
 });
-},{"./url-join":3,"mix-into":15}],3:[function(_dereq_,module,exports){
+
+function parseQueryString (queryObject) {
+  var qs = [];
+  
+  Object
+    .keys(queryObject)
+    .forEach(function (key) {
+      var value = queryObject[key];
+      
+      if (value) qs.push(key + '=' + value);
+    }, this);
+  
+  return qs.join('&');
+}
+},{"./url-join":3,"deap":7,"mix-into":15}],3:[function(_dereq_,module,exports){
 function normalize (str) {
   return str
           .replace(/[\/]+/g, '/')
