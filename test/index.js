@@ -16,13 +16,32 @@ describe('request instance', function () {
     server.stop(done);
   });
   
-
-  // TODO: make this test work and pass
-  it.skip('sets the origin for all http requests', function () {
+  it('sets the default origin for all http requests on the instance', function () {
     request.origin(host);
     
     return request.get('test')().then(function (res) {
-      console.log(res.body);
+      expect(res.body.url).to.equal('/test');
+      expect(res.body.method).to.equal('GET');
+    });
+  });
+  
+  it('sets the default headers for all http requests on the instance', function () {
+    request
+      .origin(host)
+      .header('Authorization', 'Bearer 1234');
+    
+    return request.get('test')().then(function (res) {
+      expect(res.body.headers.authorization).to.equal('Bearer 1234');
+    });
+  });
+  
+  it('sets the default xhr options for all http requests on the instance', function () {
+    request
+      .origin(host)
+      .xhrOption('method', 'POST');
+    
+    return request.get('test')().then(function (res) {
+      expect(res.body.method).to.equal('POST');
     });
   });
   
@@ -82,13 +101,6 @@ describe('setting options', function () {
     server.stop(done);
   });
   
-  it('does not modify state', function() {
-    var requester = request.http();
-    var requester2 = requester.origin('host1');
-    var requester3 = requester2.origin('host2');
-    expect(requester2._builderInstance.attributes.origin).to.equal('host1');
-  });
-
   it('sets the request origin', function () {
     var requester = request
       .get('test')
@@ -132,6 +144,17 @@ describe('setting options', function () {
       expect(res.body.body).to.eql({test: 'test'});
     });
   });
+  
+  it('sets the default settings from the instance on the request');
+  
+  // FROM: Collin
+  // 
+  // it('does not modify state', function() {
+  //   var requester = request.http();
+  //   var requester2 = requester.origin('host1');
+  //   var requester3 = requester2.origin('host2');
+  //   expect(requester2._builderInstance.attributes.origin).to.equal('host1');
+  // });
   
 });
 

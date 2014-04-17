@@ -41,7 +41,7 @@ RequestBuilder.prototype.http = function (method) {
   
   //
   var request = function () {
-    if (instance.attributes.origin) url = join(instance.attributes.origin, url);
+    if (request.attributes.origin) url = join(request.attributes.origin, url);
     
     var requestObject = {
       url: url,
@@ -55,21 +55,24 @@ RequestBuilder.prototype.http = function (method) {
   };
   
   request._builderInstance = instance;
+  request.attributes = instance.attributes;
+  request.headers = instance.headers;
+  request.xhrOptions = instance.xhrOptions;
   
   request.origin = function (origin) {
-    instance.attributes.origin = origin;
+    request.attributes.origin = origin;
     return request;
   };
   
   request.host = request.origin;
   
   request.header = function (name, value) {
-    instance.headers[name] = value;
+    request.headers[name] = value;
     return request;
   };
   
   request.xhrOption = function (name, value) {
-    instance.xhrOptions[name] = value;
+    request.xhrOptions[name] = value;
     return request;
   };
   
@@ -85,6 +88,21 @@ RequestBuilder.httpMethods.forEach(function (method) {
     return this.http.apply(this, args);
   };
 });
+
+RequestBuilder.prototype.origin = function (origin) {
+  this.attributes.origin = origin;
+  return this;
+};
+
+RequestBuilder.prototype.header = function (name, value) {
+  this.headers[name] = value;
+  return this;
+};
+
+RequestBuilder.prototype.xhrOption = function (name, value) {
+  this.xhrOptions[name] = value;
+  return this;
+};
 
 //
 module.exports = RequestBuilder;
