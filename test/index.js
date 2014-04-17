@@ -4,6 +4,7 @@ var server = new Mocksy({port: 9876});
 var request = require('../index.js');
 
 describe('making bare requests', function () {
+  var host = 'http://localhost:9876';
   
   beforeEach(function (done) {
     server.start(done);
@@ -14,7 +15,16 @@ describe('making bare requests', function () {
   });
   
   it('makes a request with a given http method', function () {
-    var apps = request('GET', 'http://localhost:9876', 'apps');
+    var apps = request('GET', host, 'apps');
+    
+    return apps().then(function (res) {
+      expect(res.body.method).to.equal('GET');
+      expect(res.body.url).to.equal('/apps');
+    });
+  });
+  
+  it('makes a get request', function () {
+    var apps = request.get(host, 'apps');
     
     return apps().then(function (res) {
       expect(res.body.method).to.equal('GET');

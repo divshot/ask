@@ -8,16 +8,16 @@ var request = function (method) {
   var url = join(args.slice(1).join('/'));
   
   return function () {
-    return request.http({
+    return request._http({
       url: url,
       method: method
     });
-  }
+  };
 };
 
-request.http = function (options) {
+request._http = function (options) {
   return new Promise(function (resolve, reject) {
-    http(options, function (err, response) {
+    http(options, function (err, response, body) {
       if (err) return reject(err);
       
       try{
@@ -30,6 +30,13 @@ request.http = function (options) {
       }
     });
   });
+};
+
+request.get = function () {
+  var args = asArray(arguments);
+  args.unshift('GET');
+  
+  return request.apply(request, args);
 };
 
 module.exports = request;

@@ -7,7 +7,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "mocha test/**/*.js"
+    "test": "npm run lint && mocha test/**/*.js",
+    "lint": "jshint index.js"
   },
   "repository": {
     "type": "git",
@@ -30,7 +31,8 @@
     "browserify": "^3.43.0",
     "mocha": "^1.18.2",
     "expect.js": "^0.3.1",
-    "mocksy": "^0.1.7"
+    "mocksy": "^0.1.7",
+    "jshint": "^2.5.0"
   },
   "dependencies": {
     "httpify": "^0.3.1",
@@ -38,5 +40,32 @@
     "slasher": "^0.1.4",
     "url-join": "0.0.1",
     "promise": "^4.0.0"
+  },
+  "jshintConfig": {
+    "expr": true,
+    "curly": false,
+    "eqeqeq": true,
+    "immed": true,
+    "latedef": false,
+    "newcap": true,
+    "noarg": true,
+    "sub": true,
+    "undef": true,
+    "unused": false,
+    "boss": true,
+    "eqnull": true,
+    "node": true,
+    "laxbreak": true,
+    "globals": {
+      "require": true,
+      "module": true,
+      "exports": true,
+      "it": true,
+      "describe": true,
+      "beforeEach": true,
+      "afterEach": true,
+      "chai": true,
+      "Regex": true
+    }
   }
 }
