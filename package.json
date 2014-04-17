@@ -1,7 +1,7 @@
 {
   "name": "request-builder",
   "version": "0.1.0",
-  "description": "Request Builder",
+  "description": "A simple, chainable way to construct HTTP requests in Node or the browser",
   "main": "index.js",
   "directories": {
     "test": "test"
@@ -9,8 +9,9 @@
   "scripts": {
     "test": "npm run lint && mocha test/**/*.js --reporter spec",
     "lint": "jshint index.js lib/",
-    "build": "npm test && npm run bundle-standalone",
-    "bundle-standalone": "build/standalone.js"
+    "build": "npm test && npm run bundle-standalone && npm run bundle-angular",
+    "bundle-standalone": "build/standalone.js",
+    "bundle-angular": "build/angular.js"
   },
   "repository": {
     "type": "git",
@@ -37,7 +38,8 @@
     "jshint": "~2.5.0",
     "minify": "~0.2.6",
     "mkdirp": "~0.3.5",
-    "testling": "~1.6.1"
+    "testling": "~1.6.1",
+    "ngmin": "^0.5.0"
   },
   "dependencies": {
     "httpify": "~0.4.0",
@@ -65,6 +67,7 @@
     "laxbreak": true,
     "globals": {
       "require": true,
+      "angular": true,
       "module": true,
       "exports": true,
       "it": true,

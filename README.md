@@ -1,5 +1,13 @@
 # request-builder
 
+A simple, chainable way to construct HTTP requests in Node or the browser (Angular or Standalone);
+
+**Usage Environments:**
+
+* [Node]()
+* [Angular]()
+* [Browser Standalone]()
+
 ## Install
 
 Bower
