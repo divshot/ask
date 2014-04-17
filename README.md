@@ -67,7 +67,7 @@ Nodejs/Browserify
 var request = require('request-builder');
 ```
 
-### Build Requests
+### How to Build Requests
 
 Simple `GET` request
 
