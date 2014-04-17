@@ -4,6 +4,30 @@ var server = new Mocksy({port: 9876});
 var RequestBuilder = require('../index.js');
 var host = 'http://localhost:9876';
 
+describe('request instance', function () {
+  var request;
+  
+  beforeEach(function (done) {
+    request = new RequestBuilder();
+    server.start(done);
+  });
+  
+  afterEach(function (done) {
+    server.stop(done);
+  });
+  
+
+  // TODO: make this test work and pass
+  it.skip('sets the origin for all http requests', function () {
+    request.origin(host);
+    
+    return request.get('test')().then(function (res) {
+      console.log(res.body);
+    });
+  });
+  
+});
+
 describe('making bare requests', function () {
   var request;
   
