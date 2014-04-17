@@ -2,8 +2,9 @@ var asArray = require('as-array');
 var http = require('httpify');
 var urlJoin = require('./lib/url-join');
 var Promise = require('promise');
-var clone = require('deap').clone;
-var extend = require('deap').extend;
+var deap = require('deap');
+var clone = deap.clone;
+var extend = deap.extend;
 var settings = require('./lib/settings');
 var HTTP_METHODS = 'GET POST PUT DELETE PATCH OPTIONS'.split(' ');
 
