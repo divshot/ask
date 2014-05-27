@@ -64,7 +64,7 @@ myApp.controller('AnotherController', function (RequestBuilder /* ready to insta
 Nodejs/Browserify
 
 ```js
-var request = require('request-builder');
+var requestBuilder = require('request-builder');
 ```
 
 ### How to Build Requests
@@ -72,7 +72,7 @@ var request = require('request-builder');
 Simple `GET` request
 
 ```js
-var request = new RequestBuilder({
+var request = requestBuilder({
   origin: '', /* default origin */
   headers: {/* set default headers */},
   xhrOptions: {/* default xhr options */
@@ -102,7 +102,7 @@ getUserFriends().then(function (res) {
 Simple `POST` request
 
 ```js
-var request = new RequestBuilder();
+var request = requestBuilder();
 
 request.origin('http://api.example.com');
 
@@ -119,6 +119,10 @@ createUser({
 ```
 
 ## API
+
+(Coming soon)
+
+## Mocking HTTP Requests
 
 (Coming soon)
 

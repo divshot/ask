@@ -1,4 +1,4 @@
-var expect = require('expect.js');
+var expect = require('chai').expect;
 var Mocksy = require('mocksy');
 var server = new Mocksy({port: 9876});
 var RequestBuilder = require('../../index.js');
@@ -224,15 +224,6 @@ describe('setting options', function () {
     expect(request.url()).to.equal(ORIGIN + '/');
     expect(test.url()).to.equal(ORIGIN + '/test/123');
   });
-  
-  // FROM: Collin
-  // 
-  // it('does not modify state', function() {
-  //   var requester = request.http();
-  //   var requester2 = requester.origin('host1');
-  //   var requester3 = requester2.origin('host2');
-  //   expect(requester2._builderInstance.attributes.origin).to.equal('host1');
-  // });
   
 });
 
