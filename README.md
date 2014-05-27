@@ -106,7 +106,7 @@ var request = requestBuilder();
 
 request.origin('http://api.example.com');
 
-var createUser = reqest.post('users');
+var createUser = request.post('users');
 
 // Send body data with request
 createUser({
@@ -124,7 +124,53 @@ createUser({
 
 ## Mocking HTTP Requests
 
-(Coming soon)
+A usefule feature with Request Builder is the ability to intercept http/xhr requests and provide custom response attributes, such as statusCode, headers, etc. This is is very helpful when testing code that uses the Request Builder module.
+
+Before building a request:
+
+```js
+var request = require('requestBuilder');
+
+request
+  .when('GET', '/some/path')
+  .respond('custom response')
+  .status(201)
+  .header('content-type', 'text/html');
+
+var somePath = request.get('some', 'path');
+
+somePath().then(function (res) {
+	
+});
+```
+
+### Mocking API
+
+#### when(method, path)
+
+Set up the http mocking interceptor. Returns an object mocking helper methods
+
+* `method` - GET, POST, PUT, DELETE, etc.
+* `path` - the relative path to intercept
+
+#### respond(body)
+
+Set the response body text for the mocked request
+
+* `body` - the data to set the response to
+
+#### status(code)
+
+Set the status code of the mocked response. Any code that is greater than or equal to 400 will cause the request promise to be rejected.
+
+* `code` - a number, 200, 201, etc., that sets the statusCode of the response
+
+#### header(name, value)
+
+Set individual headers for the response. If no value is provided, the current header value is returned.
+
+* `name` - the name of the header (case-insensitive)
+* `value` - the value of the header
 
 ## Build
 
