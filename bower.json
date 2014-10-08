@@ -1,0 +1,30 @@
+{
+  "name": "bid",
+  "main": "dist/bid.js",
+  "version": "1.0.0",
+  "homepage": "https://github.com/divshot/bid",
+  "authors": [
+    "Scott Corgan <scottcorgan@gmail.com>"
+  ],
+  "description": "A simple, chainable way to construct HTTP requests in Node or the browser",
+  "keywords": [
+    "xhr",
+    "http",
+    "request",
+    "browserify",
+    "ajax"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "build",
+    "lib",
+    ".gitignore",
+    "karma.config.js",
+    "index.js"
+  ]
+}

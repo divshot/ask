@@ -7,18 +7,18 @@ var minify = require('minify');
 var mkdirp = require('mkdirp');
 
 var ENTRY_FILE = path.resolve(__dirname, '../index.js');
-var DIST_FILE = path.resolve(__dirname, '../dist/requestbuilder.js');
-var DIST_FILE_MIN = path.resolve(__dirname, '../dist/requestbuild.min.js');
+var DIST_FILE = path.resolve(__dirname, '../dist/bid.js');
+var DIST_FILE_MIN = path.resolve(__dirname, '../dist/bid.min.js');
 
 // Create dist directory
 mkdirp.sync(path.resolve(__dirname, '../dist'));
 
 console.log('Bundling ...');
 
-browserify(ENTRY_FILE)
-  .bundle({
+browserify(ENTRY_FILE, {
     standalone: 'RequestBuilder'
   })
+  .bundle()
   .pipe(fs.createWriteStream(DIST_FILE)).on('close', optimize);
 
 function optimize () {
@@ -26,9 +26,7 @@ function optimize () {
   fs.writeFileSync(DIST_FILE_MIN, contents);
   
   console.log('Minifying ...\n')
-  minify.optimize(DIST_FILE_MIN, {
-    callback: function (minifiedContents) {
-      fs.writeFileSync(DIST_FILE_MIN, minifiedContents);
-    }
+  minify(DIST_FILE_MIN, function (minifiedContents) {
+    fs.writeFileSync(DIST_FILE_MIN, minifiedContents);
   });
 }

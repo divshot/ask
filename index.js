@@ -12,8 +12,8 @@ var mockRequestResponse = require('./lib/mock-request-response');
 var HTTP_METHODS = 'GET POST PUT DELETE PATCH OPTIONS'.split(' ');
 
 //
-function RequestBuilder (options) {
-  if (!(this instanceof RequestBuilder)) return new RequestBuilder(options);
+function Bid (options) {
+  if (!(this instanceof Bid)) return new Bid(options);
   if (!options) options = {};
   
   this.origin(options.origin);
@@ -27,37 +27,37 @@ function RequestBuilder (options) {
   }, this);
 }
 
-RequestBuilder.HTTP_METHODS = HTTP_METHODS;
-RequestBuilder.join = urlJoin;
-settings.mixInto(RequestBuilder.prototype);
+Bid.HTTP_METHODS = HTTP_METHODS;
+Bid.join = urlJoin;
+settings.mixInto(Bid.prototype);
 
-RequestBuilder.prototype._rawHttp = function (options) {
+Bid.prototype._rawHttp = function (options) {
   return request(options);
 };
 
-RequestBuilder.prototype.promise = function (callback) {
+Bid.prototype.promise = function (callback) {
   return new Promise(callback);
 };
 
-RequestBuilder.prototype.asPromise = function (data) {
+Bid.prototype.asPromise = function (data) {
   return this.promise(function (resolve) {
     resolve(data);
   });
 };
 
-RequestBuilder.prototype.asRejectedPromise = function (data) {
+Bid.prototype.asRejectedPromise = function (data) {
   return this.promise(function (resolve, reject) {
     reject(data);
   });
 };
 
-RequestBuilder.prototype.mock = function (method, pathname, mockObject) {
+Bid.prototype.mock = function (method, pathname, mockObject) {
   if (mockObject === undefined) return this.mocks[method.toLowerCase()][slash(pathname)]; 
   
   return this.mocks[method.toLowerCase()][slash(pathname)] = mockObject;
 };
 
-RequestBuilder.prototype.http = function (method) {
+Bid.prototype.http = function (method) {
   var rawHttp = this._rawHttp;
   var uri = rest(asArray(arguments)).join('/');
   
@@ -90,14 +90,14 @@ RequestBuilder.prototype.http = function (method) {
   return resource;
 };
 
-RequestBuilder.prototype.when = function (method, pathname) {
+Bid.prototype.when = function (method, pathname) {
   var mockedRequest = mockRequestResponse(this, method, pathname);
   return this.mock(method, pathname, mockedRequest);
 };
 
 // Create help http verb functions
-RequestBuilder.HTTP_METHODS.forEach(function (method) {
-  RequestBuilder.prototype[method.toLowerCase()] = function () {
+Bid.HTTP_METHODS.forEach(function (method) {
+  Bid.prototype[method.toLowerCase()] = function () {
     var args = asArray(arguments);
     args.unshift(method);
     
@@ -110,4 +110,4 @@ function rest (arr) {
 }
 
 //
-module.exports = RequestBuilder;
+module.exports = Bid;

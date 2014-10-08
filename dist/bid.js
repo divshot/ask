@@ -1,20 +1,20 @@
-!function(e){if("object"==typeof exports)module.exports=e();else if("function"==typeof define&&define.amd)define(e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.RequestBuilder=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
-var asArray = _dereq_('as-array');
-var slash = _dereq_('slasher');
-var request = _dereq_('httpify');
-var urlJoin = _dereq_('./lib/url-join');
-var Promise = _dereq_('promise');
-var deap = _dereq_('deap');
+!function(e){if("object"==typeof exports&&"undefined"!=typeof module)module.exports=e();else if("function"==typeof define&&define.amd)define([],e);else{var f;"undefined"!=typeof window?f=window:"undefined"!=typeof global?f=global:"undefined"!=typeof self&&(f=self),f.RequestBuilder=e()}}(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var asArray = require('as-array');
+var slash = require('slasher');
+var request = require('httpify');
+var urlJoin = require('./lib/url-join');
+var Promise = require('promise');
+var deap = require('deap');
 var clone = deap.clone;
 var extend = deap.extend;
-var settings = _dereq_('./lib/settings');
-var mockRequestResponse = _dereq_('./lib/mock-request-response');
+var settings = require('./lib/settings');
+var mockRequestResponse = require('./lib/mock-request-response');
 
 var HTTP_METHODS = 'GET POST PUT DELETE PATCH OPTIONS'.split(' ');
 
 //
-function RequestBuilder (options) {
-  if (!(this instanceof RequestBuilder)) return new RequestBuilder(options);
+function Bid (options) {
+  if (!(this instanceof Bid)) return new Bid(options);
   if (!options) options = {};
   
   this.origin(options.origin);
@@ -28,37 +28,37 @@ function RequestBuilder (options) {
   }, this);
 }
 
-RequestBuilder.HTTP_METHODS = HTTP_METHODS;
-RequestBuilder.join = urlJoin;
-settings.mixInto(RequestBuilder.prototype);
+Bid.HTTP_METHODS = HTTP_METHODS;
+Bid.join = urlJoin;
+settings.mixInto(Bid.prototype);
 
-RequestBuilder.prototype._rawHttp = function (options) {
+Bid.prototype._rawHttp = function (options) {
   return request(options);
 };
 
-RequestBuilder.prototype.promise = function (callback) {
+Bid.prototype.promise = function (callback) {
   return new Promise(callback);
 };
 
-RequestBuilder.prototype.asPromise = function (data) {
+Bid.prototype.asPromise = function (data) {
   return this.promise(function (resolve) {
     resolve(data);
   });
 };
 
-RequestBuilder.prototype.asRejectedPromise = function (data) {
+Bid.prototype.asRejectedPromise = function (data) {
   return this.promise(function (resolve, reject) {
     reject(data);
   });
 };
 
-RequestBuilder.prototype.mock = function (method, pathname, mockObject) {
+Bid.prototype.mock = function (method, pathname, mockObject) {
   if (mockObject === undefined) return this.mocks[method.toLowerCase()][slash(pathname)]; 
   
   return this.mocks[method.toLowerCase()][slash(pathname)] = mockObject;
 };
 
-RequestBuilder.prototype.http = function (method) {
+Bid.prototype.http = function (method) {
   var rawHttp = this._rawHttp;
   var uri = rest(asArray(arguments)).join('/');
   
@@ -91,14 +91,14 @@ RequestBuilder.prototype.http = function (method) {
   return resource;
 };
 
-RequestBuilder.prototype.when = function (method, pathname) {
+Bid.prototype.when = function (method, pathname) {
   var mockedRequest = mockRequestResponse(this, method, pathname);
   return this.mock(method, pathname, mockedRequest);
 };
 
 // Create help http verb functions
-RequestBuilder.HTTP_METHODS.forEach(function (method) {
-  RequestBuilder.prototype[method.toLowerCase()] = function () {
+Bid.HTTP_METHODS.forEach(function (method) {
+  Bid.prototype[method.toLowerCase()] = function () {
     var args = asArray(arguments);
     args.unshift(method);
     
@@ -111,8 +111,8 @@ function rest (arr) {
 }
 
 //
-module.exports = RequestBuilder;
-},{"./lib/mock-request-response":2,"./lib/settings":3,"./lib/url-join":4,"as-array":5,"deap":9,"httpify":12,"promise":19,"slasher":21}],2:[function(_dereq_,module,exports){
+module.exports = Bid;
+},{"./lib/mock-request-response":2,"./lib/settings":3,"./lib/url-join":4,"as-array":5,"deap":9,"httpify":12,"promise":29,"slasher":31}],2:[function(require,module,exports){
 module.exports = function (context, method, pathname) {
   return {
     context: context,
@@ -155,10 +155,10 @@ module.exports = function (context, method, pathname) {
     }
   };
 };
-},{}],3:[function(_dereq_,module,exports){
-var mix = _dereq_('mix-into');
-var join = _dereq_('./url-join');
-var extend = _dereq_('deap').extend;
+},{}],3:[function(require,module,exports){
+var mix = require('mix-into');
+var join = require('./url-join');
+var extend = require('deap').extend;
 
 // Settings mixin
 module.exports = mix({
@@ -237,7 +237,7 @@ function parseQueryString (queryObject) {
   
   return qs.join('&');
 }
-},{"./url-join":4,"deap":9,"mix-into":17}],4:[function(_dereq_,module,exports){
+},{"./url-join":4,"deap":9,"mix-into":27}],4:[function(require,module,exports){
 function normalize (str) {
   return str
           .replace(/[\/]+/g, '/')
@@ -250,8 +250,8 @@ module.exports = function () {
   var joined = [].slice.call(arguments, 0).join('/');
   return normalize(joined);
 };
-},{}],5:[function(_dereq_,module,exports){
-var isArgs = _dereq_('lodash.isarguments');
+},{}],5:[function(require,module,exports){
+var isArgs = require('lodash.isarguments');
 
 module.exports = function (data) {
   if (!data) data = [];
@@ -261,7 +261,7 @@ module.exports = function (data) {
     ? data
     : [data];
 };
-},{"lodash.isarguments":6}],6:[function(_dereq_,module,exports){
+},{"lodash.isarguments":6}],6:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -303,69 +303,7 @@ function isArguments(value) {
 
 module.exports = isArguments;
 
-},{}],7:[function(_dereq_,module,exports){
-// shim for using process in browser
-
-var process = module.exports = {};
-
-process.nextTick = (function () {
-    var canSetImmediate = typeof window !== 'undefined'
-    && window.setImmediate;
-    var canPost = typeof window !== 'undefined'
-    && window.postMessage && window.addEventListener
-    ;
-
-    if (canSetImmediate) {
-        return function (f) { return window.setImmediate(f) };
-    }
-
-    if (canPost) {
-        var queue = [];
-        window.addEventListener('message', function (ev) {
-            var source = ev.source;
-            if ((source === window || source === null) && ev.data === 'process-tick') {
-                ev.stopPropagation();
-                if (queue.length > 0) {
-                    var fn = queue.shift();
-                    fn();
-                }
-            }
-        }, true);
-
-        return function nextTick(fn) {
-            queue.push(fn);
-            window.postMessage('process-tick', '*');
-        };
-    }
-
-    return function nextTick(fn) {
-        setTimeout(fn, 0);
-    };
-})();
-
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-
-function noop() {}
-
-process.on = noop;
-process.once = noop;
-process.off = noop;
-process.emit = noop;
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-}
-
-// TODO(shtylman)
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-
-},{}],8:[function(_dereq_,module,exports){
+},{}],7:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -592,9 +530,97 @@ var substr = 'ab'.substr(-1) === 'b'
     }
 ;
 
-}).call(this,_dereq_("/Users/scott/www/divshot/request-builder/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js"))
-},{"/Users/scott/www/divshot/request-builder/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":7}],9:[function(_dereq_,module,exports){
-var lib = _dereq_('./lib/deap');
+}).call(this,require('_process'))
+},{"_process":8}],8:[function(require,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+
+process.nextTick = (function () {
+    var canSetImmediate = typeof window !== 'undefined'
+    && window.setImmediate;
+    var canMutationObserver = typeof window !== 'undefined'
+    && window.MutationObserver;
+    var canPost = typeof window !== 'undefined'
+    && window.postMessage && window.addEventListener
+    ;
+
+    if (canSetImmediate) {
+        return function (f) { return window.setImmediate(f) };
+    }
+
+    var queue = [];
+
+    if (canMutationObserver) {
+        var hiddenDiv = document.createElement("div");
+        var observer = new MutationObserver(function () {
+            var queueList = queue.slice();
+            queue.length = 0;
+            queueList.forEach(function (fn) {
+                fn();
+            });
+        });
+
+        observer.observe(hiddenDiv, { attributes: true });
+
+        return function nextTick(fn) {
+            if (!queue.length) {
+                hiddenDiv.setAttribute('yes', 'no');
+            }
+            queue.push(fn);
+        };
+    }
+
+    if (canPost) {
+        window.addEventListener('message', function (ev) {
+            var source = ev.source;
+            if ((source === window || source === null) && ev.data === 'process-tick') {
+                ev.stopPropagation();
+                if (queue.length > 0) {
+                    var fn = queue.shift();
+                    fn();
+                }
+            }
+        }, true);
+
+        return function nextTick(fn) {
+            queue.push(fn);
+            window.postMessage('process-tick', '*');
+        };
+    }
+
+    return function nextTick(fn) {
+        setTimeout(fn, 0);
+    };
+})();
+
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+// TODO(shtylman)
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+
+},{}],9:[function(require,module,exports){
+var lib = require('./lib/deap');
 
 var deap = module.exports = lib.extend;
 
@@ -609,8 +635,8 @@ deap(deap, {
 	mergeShallow: lib.mergeShallow
 });
 
-},{"./lib/deap":10}],10:[function(_dereq_,module,exports){
-var typeOf = _dereq_('./typeof'),
+},{"./lib/deap":10}],10:[function(require,module,exports){
+var typeOf = require('./typeof'),
 	slice = Array.prototype.slice;
 
 module.exports = {
@@ -732,7 +758,7 @@ function deepMerge(a, b /*, [b2..n] */) {
 	return a;
 }
 
-},{"./typeof":11}],11:[function(_dereq_,module,exports){
+},{"./typeof":11}],11:[function(require,module,exports){
 
 module.exports = function(obj) {
 	var t = typeof obj;
@@ -753,9 +779,9 @@ module.exports = function(obj) {
 	return 'object';
 };
 
-},{}],12:[function(_dereq_,module,exports){
-var Promise = _dereq_('promise');
-var request = _dereq_('request');
+},{}],12:[function(require,module,exports){
+var Promise = require('promise');
+var request = require('request');
 
 module.exports = function (options, callback) {
   return new Promise(function (resolve, reject) {
@@ -769,24 +795,24 @@ module.exports = function (options, callback) {
         return 
       }
       
+      try{
+        response.body = JSON.parse(body);
+      }
+      catch (e) {}
+      
       if (status >= 400 && status < 600) {
         callback(null, response);
         reject(response);
         return
       }
       
-      try{
-        response.body = JSON.parse(body);
-      }
-      catch (e) {}
-      
       callback(null, response);
       resolve(response);
     });
   });
 };
-},{"promise":19,"request":13}],13:[function(_dereq_,module,exports){
-var request = _dereq_('xhr');
+},{"promise":14,"request":13}],13:[function(require,module,exports){
+var request = require('xhr');
 
 // Wrapper to make the features more similiar between
 // request and xhr
@@ -815,9 +841,428 @@ module.exports = function (options, callback) {
   
   return request(options, callback);
 };
-},{"xhr":14}],14:[function(_dereq_,module,exports){
-var window = _dereq_("global/window")
-var once = _dereq_("once")
+},{"xhr":20}],14:[function(require,module,exports){
+'use strict';
+
+module.exports = require('./lib/core.js')
+require('./lib/done.js')
+require('./lib/es6-extensions.js')
+require('./lib/node-extensions.js')
+},{"./lib/core.js":15,"./lib/done.js":16,"./lib/es6-extensions.js":17,"./lib/node-extensions.js":18}],15:[function(require,module,exports){
+'use strict';
+
+var asap = require('asap')
+
+module.exports = Promise;
+function Promise(fn) {
+  if (typeof this !== 'object') throw new TypeError('Promises must be constructed via new')
+  if (typeof fn !== 'function') throw new TypeError('not a function')
+  var state = null
+  var value = null
+  var deferreds = []
+  var self = this
+
+  this.then = function(onFulfilled, onRejected) {
+    return new self.constructor(function(resolve, reject) {
+      handle(new Handler(onFulfilled, onRejected, resolve, reject))
+    })
+  }
+
+  function handle(deferred) {
+    if (state === null) {
+      deferreds.push(deferred)
+      return
+    }
+    asap(function() {
+      var cb = state ? deferred.onFulfilled : deferred.onRejected
+      if (cb === null) {
+        (state ? deferred.resolve : deferred.reject)(value)
+        return
+      }
+      var ret
+      try {
+        ret = cb(value)
+      }
+      catch (e) {
+        deferred.reject(e)
+        return
+      }
+      deferred.resolve(ret)
+    })
+  }
+
+  function resolve(newValue) {
+    try { //Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
+      if (newValue === self) throw new TypeError('A promise cannot be resolved with itself.')
+      if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
+        var then = newValue.then
+        if (typeof then === 'function') {
+          doResolve(then.bind(newValue), resolve, reject)
+          return
+        }
+      }
+      state = true
+      value = newValue
+      finale()
+    } catch (e) { reject(e) }
+  }
+
+  function reject(newValue) {
+    state = false
+    value = newValue
+    finale()
+  }
+
+  function finale() {
+    for (var i = 0, len = deferreds.length; i < len; i++)
+      handle(deferreds[i])
+    deferreds = null
+  }
+
+  doResolve(fn, resolve, reject)
+}
+
+
+function Handler(onFulfilled, onRejected, resolve, reject){
+  this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null
+  this.onRejected = typeof onRejected === 'function' ? onRejected : null
+  this.resolve = resolve
+  this.reject = reject
+}
+
+/**
+ * Take a potentially misbehaving resolver function and make sure
+ * onFulfilled and onRejected are only called once.
+ *
+ * Makes no guarantees about asynchrony.
+ */
+function doResolve(fn, onFulfilled, onRejected) {
+  var done = false;
+  try {
+    fn(function (value) {
+      if (done) return
+      done = true
+      onFulfilled(value)
+    }, function (reason) {
+      if (done) return
+      done = true
+      onRejected(reason)
+    })
+  } catch (ex) {
+    if (done) return
+    done = true
+    onRejected(ex)
+  }
+}
+
+},{"asap":19}],16:[function(require,module,exports){
+'use strict';
+
+var Promise = require('./core.js')
+var asap = require('asap')
+
+module.exports = Promise
+Promise.prototype.done = function (onFulfilled, onRejected) {
+  var self = arguments.length ? this.then.apply(this, arguments) : this
+  self.then(null, function (err) {
+    asap(function () {
+      throw err
+    })
+  })
+}
+},{"./core.js":15,"asap":19}],17:[function(require,module,exports){
+'use strict';
+
+//This file contains the ES6 extensions to the core Promises/A+ API
+
+var Promise = require('./core.js')
+var asap = require('asap')
+
+module.exports = Promise
+
+/* Static Functions */
+
+function ValuePromise(value) {
+  this.then = function (onFulfilled) {
+    if (typeof onFulfilled !== 'function') return this
+    return new Promise(function (resolve, reject) {
+      asap(function () {
+        try {
+          resolve(onFulfilled(value))
+        } catch (ex) {
+          reject(ex);
+        }
+      })
+    })
+  }
+}
+ValuePromise.prototype = Promise.prototype
+
+var TRUE = new ValuePromise(true)
+var FALSE = new ValuePromise(false)
+var NULL = new ValuePromise(null)
+var UNDEFINED = new ValuePromise(undefined)
+var ZERO = new ValuePromise(0)
+var EMPTYSTRING = new ValuePromise('')
+
+Promise.resolve = function (value) {
+  if (value instanceof Promise) return value
+
+  if (value === null) return NULL
+  if (value === undefined) return UNDEFINED
+  if (value === true) return TRUE
+  if (value === false) return FALSE
+  if (value === 0) return ZERO
+  if (value === '') return EMPTYSTRING
+
+  if (typeof value === 'object' || typeof value === 'function') {
+    try {
+      var then = value.then
+      if (typeof then === 'function') {
+        return new Promise(then.bind(value))
+      }
+    } catch (ex) {
+      return new Promise(function (resolve, reject) {
+        reject(ex)
+      })
+    }
+  }
+
+  return new ValuePromise(value)
+}
+
+Promise.all = function (arr) {
+  var args = Array.prototype.slice.call(arr)
+
+  return new Promise(function (resolve, reject) {
+    if (args.length === 0) return resolve([])
+    var remaining = args.length
+    function res(i, val) {
+      try {
+        if (val && (typeof val === 'object' || typeof val === 'function')) {
+          var then = val.then
+          if (typeof then === 'function') {
+            then.call(val, function (val) { res(i, val) }, reject)
+            return
+          }
+        }
+        args[i] = val
+        if (--remaining === 0) {
+          resolve(args);
+        }
+      } catch (ex) {
+        reject(ex)
+      }
+    }
+    for (var i = 0; i < args.length; i++) {
+      res(i, args[i])
+    }
+  })
+}
+
+Promise.reject = function (value) {
+  return new Promise(function (resolve, reject) { 
+    reject(value);
+  });
+}
+
+Promise.race = function (values) {
+  return new Promise(function (resolve, reject) { 
+    values.forEach(function(value){
+      Promise.resolve(value).then(resolve, reject);
+    })
+  });
+}
+
+/* Prototype Methods */
+
+Promise.prototype['catch'] = function (onRejected) {
+  return this.then(null, onRejected);
+}
+
+},{"./core.js":15,"asap":19}],18:[function(require,module,exports){
+'use strict';
+
+//This file contains then/promise specific extensions that are only useful for node.js interop
+
+var Promise = require('./core.js')
+var asap = require('asap')
+
+module.exports = Promise
+
+/* Static Functions */
+
+Promise.denodeify = function (fn, argumentCount) {
+  argumentCount = argumentCount || Infinity
+  return function () {
+    var self = this
+    var args = Array.prototype.slice.call(arguments)
+    return new Promise(function (resolve, reject) {
+      while (args.length && args.length > argumentCount) {
+        args.pop()
+      }
+      args.push(function (err, res) {
+        if (err) reject(err)
+        else resolve(res)
+      })
+      fn.apply(self, args)
+    })
+  }
+}
+Promise.nodeify = function (fn) {
+  return function () {
+    var args = Array.prototype.slice.call(arguments)
+    var callback = typeof args[args.length - 1] === 'function' ? args.pop() : null
+    var ctx = this
+    try {
+      return fn.apply(this, arguments).nodeify(callback, ctx)
+    } catch (ex) {
+      if (callback === null || typeof callback == 'undefined') {
+        return new Promise(function (resolve, reject) { reject(ex) })
+      } else {
+        asap(function () {
+          callback.call(ctx, ex)
+        })
+      }
+    }
+  }
+}
+
+Promise.prototype.nodeify = function (callback, ctx) {
+  if (typeof callback != 'function') return this
+
+  this.then(function (value) {
+    asap(function () {
+      callback.call(ctx, null, value)
+    })
+  }, function (err) {
+    asap(function () {
+      callback.call(ctx, err)
+    })
+  })
+}
+
+},{"./core.js":15,"asap":19}],19:[function(require,module,exports){
+(function (process){
+
+// Use the fastest possible means to execute a task in a future turn
+// of the event loop.
+
+// linked list of tasks (single, with head node)
+var head = {task: void 0, next: null};
+var tail = head;
+var flushing = false;
+var requestFlush = void 0;
+var isNodeJS = false;
+
+function flush() {
+    /* jshint loopfunc: true */
+
+    while (head.next) {
+        head = head.next;
+        var task = head.task;
+        head.task = void 0;
+        var domain = head.domain;
+
+        if (domain) {
+            head.domain = void 0;
+            domain.enter();
+        }
+
+        try {
+            task();
+
+        } catch (e) {
+            if (isNodeJS) {
+                // In node, uncaught exceptions are considered fatal errors.
+                // Re-throw them synchronously to interrupt flushing!
+
+                // Ensure continuation if the uncaught exception is suppressed
+                // listening "uncaughtException" events (as domains does).
+                // Continue in next event to avoid tick recursion.
+                if (domain) {
+                    domain.exit();
+                }
+                setTimeout(flush, 0);
+                if (domain) {
+                    domain.enter();
+                }
+
+                throw e;
+
+            } else {
+                // In browsers, uncaught exceptions are not fatal.
+                // Re-throw them asynchronously to avoid slow-downs.
+                setTimeout(function() {
+                   throw e;
+                }, 0);
+            }
+        }
+
+        if (domain) {
+            domain.exit();
+        }
+    }
+
+    flushing = false;
+}
+
+if (typeof process !== "undefined" && process.nextTick) {
+    // Node.js before 0.9. Note that some fake-Node environments, like the
+    // Mocha test runner, introduce a `process` global without a `nextTick`.
+    isNodeJS = true;
+
+    requestFlush = function () {
+        process.nextTick(flush);
+    };
+
+} else if (typeof setImmediate === "function") {
+    // In IE10, Node.js 0.9+, or https://github.com/NobleJS/setImmediate
+    if (typeof window !== "undefined") {
+        requestFlush = setImmediate.bind(window, flush);
+    } else {
+        requestFlush = function () {
+            setImmediate(flush);
+        };
+    }
+
+} else if (typeof MessageChannel !== "undefined") {
+    // modern browsers
+    // http://www.nonblocking.io/2011/06/windownexttick.html
+    var channel = new MessageChannel();
+    channel.port1.onmessage = flush;
+    requestFlush = function () {
+        channel.port2.postMessage(0);
+    };
+
+} else {
+    // old browsers
+    requestFlush = function () {
+        setTimeout(flush, 0);
+    };
+}
+
+function asap(task) {
+    tail = tail.next = {
+        task: task,
+        domain: isNodeJS && process.domain,
+        next: null
+    };
+
+    if (!flushing) {
+        flushing = true;
+        requestFlush();
+    }
+};
+
+module.exports = asap;
+
+
+}).call(this,require('_process'))
+},{"_process":8}],20:[function(require,module,exports){
+var window = require("global/window")
+var once = require("once")
+var parseHeaders = require('parse-headers')
 
 var messages = {
     "0": "Internal XMLHttpRequest Error",
@@ -826,8 +1271,7 @@ var messages = {
 }
 
 var XHR = window.XMLHttpRequest || noop
-var XDR = "withCredentials" in (new XHR()) ?
-        window.XMLHttpRequest : window.XDomainRequest
+var XDR = "withCredentials" in (new XHR()) ? XHR : window.XDomainRequest
 
 module.exports = createXHR
 
@@ -841,23 +1285,30 @@ function createXHR(options, callback) {
 
     var xhr = options.xhr || null
 
-    if (!xhr && options.cors) {
-        xhr = new XDR()
-    } else if (!xhr) {
-        xhr = new XHR()
+    if (!xhr) {
+        if (options.cors || options.useXDR) {
+            xhr = new XDR()
+        }else{
+            xhr = new XHR()
+        }
     }
 
-    var uri = xhr.url = options.uri || options.url;
+    var uri = xhr.url = options.uri || options.url
     var method = xhr.method = options.method || "GET"
     var body = options.body || options.data
     var headers = xhr.headers = options.headers || {}
     var sync = !!options.sync
     var isJson = false
+    var key
+    var load = options.response ? loadResponse : loadXhr
 
     if ("json" in options) {
         isJson = true
-        headers["Content-Type"] = "application/json"
-        body = JSON.stringify(options.json)
+        headers["Accept"] = "application/json"
+        if (method !== "GET" && method !== "HEAD") {
+            headers["Content-Type"] = "application/json"
+            body = JSON.stringify(options.json)
+        }
     }
 
     xhr.onreadystatechange = readystatechange
@@ -870,22 +1321,34 @@ function createXHR(options, callback) {
     // hate IE
     xhr.ontimeout = noop
     xhr.open(method, uri, !sync)
-    if (options.cors) {
+                                    //backward compatibility
+    if (options.withCredentials || (options.cors && options.withCredentials !== false)) {
         xhr.withCredentials = true
     }
+
     // Cannot set timeout with sync request
     if (!sync) {
         xhr.timeout = "timeout" in options ? options.timeout : 5000
     }
 
-    if ( xhr.setRequestHeader) {
-        Object.keys(headers).forEach(function (key) {
-            xhr.setRequestHeader(key, headers[key])
-        })
+    if (xhr.setRequestHeader) {
+        for(key in headers){
+            if(headers.hasOwnProperty(key)){
+                xhr.setRequestHeader(key, headers[key])
+            }
+        }
+    } else if (options.headers) {
+        throw new Error("Headers cannot be set on an XDomainRequest object")
     }
 
     if ("responseType" in options) {
         xhr.responseType = options.responseType
+    }
+    
+    if ("beforeSend" in options && 
+        typeof options.beforeSend === "function"
+    ) {
+        options.beforeSend(xhr)
     }
 
     xhr.send(body)
@@ -898,27 +1361,72 @@ function createXHR(options, callback) {
         }
     }
 
-    function load() {
-        var error = null
-        var status = xhr.statusCode = xhr.status
-        var body = xhr.body = xhr.response ||
-            xhr.responseText || xhr.responseXML
+    function getBody() {
+        // Chrome with requestType=blob throws errors arround when even testing access to responseText
+        var body = null
 
-        if (status === 0 || (status >= 400 && status < 600)) {
-            var message = xhr.responseText ||
-                messages[String(xhr.status).charAt(0)]
-            error = new Error(message)
-
-            error.statusCode = xhr.status
+        if (xhr.response) {
+            body = xhr.response
+        } else if (xhr.responseType === 'text' || !xhr.responseType) {
+            body = xhr.responseText || xhr.responseXML
         }
 
         if (isJson) {
             try {
-                body = xhr.body = JSON.parse(body)
+                body = JSON.parse(body)
             } catch (e) {}
         }
 
-        callback(error, xhr, body)
+        return body
+    }
+
+    function getStatusCode() {
+        return xhr.status === 1223 ? 204 : xhr.status
+    }
+
+    // if we're getting a none-ok statusCode, build & return an error
+    function errorFromStatusCode(status) {
+        var error = null
+        if (status === 0 || (status >= 400 && status < 600)) {
+            var message = (typeof body === "string" ? body : false) ||
+                messages[String(status).charAt(0)]
+            error = new Error(message)
+            error.statusCode = status
+        }
+
+        return error
+    }
+
+    // will load the data & process the response in a special response object
+    function loadResponse() {
+        var status = getStatusCode()
+        var error = errorFromStatusCode(status)
+        var response = {
+            body: getBody(),
+            statusCode: status,
+            statusText: xhr.statusText,
+            raw: xhr
+        }
+        if(xhr.getAllResponseHeaders){ //remember xhr can in fact be XDR for CORS in IE
+            response.headers = parseHeaders(xhr.getAllResponseHeaders())
+        } else {
+            response.headers = {}
+        }
+
+        callback(error, response, response.body)
+    }
+
+    // will load the data and add some response properties to the source xhr
+    // and then respond with that
+    function loadXhr() {
+        var status = getStatusCode()
+        var error = errorFromStatusCode(status)
+
+        xhr.status = xhr.statusCode = status
+        xhr.body = getBody()
+        xhr.headers = parseHeaders(xhr.getAllResponseHeaders())
+
+        callback(error, xhr, xhr.body)
     }
 
     function error(evt) {
@@ -929,18 +1437,18 @@ function createXHR(options, callback) {
 
 function noop() {}
 
-},{"global/window":15,"once":16}],15:[function(_dereq_,module,exports){
+},{"global/window":21,"once":22,"parse-headers":26}],21:[function(require,module,exports){
 (function (global){
 if (typeof window !== "undefined") {
-    module.exports = window
+    module.exports = window;
 } else if (typeof global !== "undefined") {
-    module.exports = global
+    module.exports = global;
 } else {
-    module.exports = {}
+    module.exports = {};
 }
 
-}).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],16:[function(_dereq_,module,exports){
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],22:[function(require,module,exports){
 module.exports = once
 
 once.proto = once(function () {
@@ -961,8 +1469,121 @@ function once (fn) {
   }
 }
 
-},{}],17:[function(_dereq_,module,exports){
-var clone = _dereq_('deap').cone;
+},{}],23:[function(require,module,exports){
+var isFunction = require('is-function')
+
+module.exports = forEach
+
+var toString = Object.prototype.toString
+var hasOwnProperty = Object.prototype.hasOwnProperty
+
+function forEach(list, iterator, context) {
+    if (!isFunction(iterator)) {
+        throw new TypeError('iterator must be a function')
+    }
+
+    if (arguments.length < 3) {
+        context = this
+    }
+    
+    if (toString.call(list) === '[object Array]')
+        forEachArray(list, iterator, context)
+    else if (typeof list === 'string')
+        forEachString(list, iterator, context)
+    else
+        forEachObject(list, iterator, context)
+}
+
+function forEachArray(array, iterator, context) {
+    for (var i = 0, len = array.length; i < len; i++) {
+        if (hasOwnProperty.call(array, i)) {
+            iterator.call(context, array[i], i, array)
+        }
+    }
+}
+
+function forEachString(string, iterator, context) {
+    for (var i = 0, len = string.length; i < len; i++) {
+        // no such thing as a sparse string.
+        iterator.call(context, string.charAt(i), i, string)
+    }
+}
+
+function forEachObject(object, iterator, context) {
+    for (var k in object) {
+        if (hasOwnProperty.call(object, k)) {
+            iterator.call(context, object[k], k, object)
+        }
+    }
+}
+
+},{"is-function":24}],24:[function(require,module,exports){
+module.exports = isFunction
+
+var toString = Object.prototype.toString
+
+function isFunction (fn) {
+  var string = toString.call(fn)
+  return string === '[object Function]' ||
+    (typeof fn === 'function' && string !== '[object RegExp]') ||
+    (typeof window !== 'undefined' &&
+     // IE8 and below
+     (fn === window.setTimeout ||
+      fn === window.alert ||
+      fn === window.confirm ||
+      fn === window.prompt))
+};
+
+},{}],25:[function(require,module,exports){
+
+exports = module.exports = trim;
+
+function trim(str){
+  return str.replace(/^\s*|\s*$/g, '');
+}
+
+exports.left = function(str){
+  return str.replace(/^\s*/, '');
+};
+
+exports.right = function(str){
+  return str.replace(/\s*$/, '');
+};
+
+},{}],26:[function(require,module,exports){
+var trim = require('trim')
+  , forEach = require('for-each')
+  , isArray = function(arg) {
+      return Object.prototype.toString.call(arg) === '[object Array]';
+    }
+
+module.exports = function (headers) {
+  if (!headers)
+    return {}
+
+  var result = {}
+
+  forEach(
+      trim(headers).split('\n')
+    , function (row) {
+        var index = row.indexOf(':')
+          , key = trim(row.slice(0, index)).toLowerCase()
+          , value = trim(row.slice(index + 1))
+
+        if (typeof(result[key]) === 'undefined') {
+          result[key] = value
+        } else if (isArray(result[key])) {
+          result[key].push(value)
+        } else {
+          result[key] = [ result[key], value ]
+        }
+      }
+  )
+
+  return result
+}
+},{"for-each":23,"trim":25}],27:[function(require,module,exports){
+var clone = require('deap').cone;
 
 var mix = function (source) {
   return new Mix(source);
@@ -1006,10 +1627,10 @@ function mixInto (source) {
 }
 
 module.exports = mix;
-},{"deap":9}],18:[function(_dereq_,module,exports){
+},{"deap":9}],28:[function(require,module,exports){
 'use strict';
 
-var asap = _dereq_('asap')
+var asap = require('asap')
 
 module.exports = Promise
 function Promise(fn) {
@@ -1113,13 +1734,13 @@ function doResolve(fn, onFulfilled, onRejected) {
   }
 }
 
-},{"asap":20}],19:[function(_dereq_,module,exports){
+},{"asap":30}],29:[function(require,module,exports){
 'use strict';
 
 //This file contains then/promise specific extensions to the core promise API
 
-var Promise = _dereq_('./core.js')
-var asap = _dereq_('asap')
+var Promise = require('./core.js')
+var asap = require('asap')
 
 module.exports = Promise
 
@@ -1287,125 +1908,10 @@ Promise.race = function (values) {
   });
 }
 
-},{"./core.js":18,"asap":20}],20:[function(_dereq_,module,exports){
-(function (process){
-
-// Use the fastest possible means to execute a task in a future turn
-// of the event loop.
-
-// linked list of tasks (single, with head node)
-var head = {task: void 0, next: null};
-var tail = head;
-var flushing = false;
-var requestFlush = void 0;
-var isNodeJS = false;
-
-function flush() {
-    /* jshint loopfunc: true */
-
-    while (head.next) {
-        head = head.next;
-        var task = head.task;
-        head.task = void 0;
-        var domain = head.domain;
-
-        if (domain) {
-            head.domain = void 0;
-            domain.enter();
-        }
-
-        try {
-            task();
-
-        } catch (e) {
-            if (isNodeJS) {
-                // In node, uncaught exceptions are considered fatal errors.
-                // Re-throw them synchronously to interrupt flushing!
-
-                // Ensure continuation if the uncaught exception is suppressed
-                // listening "uncaughtException" events (as domains does).
-                // Continue in next event to avoid tick recursion.
-                if (domain) {
-                    domain.exit();
-                }
-                setTimeout(flush, 0);
-                if (domain) {
-                    domain.enter();
-                }
-
-                throw e;
-
-            } else {
-                // In browsers, uncaught exceptions are not fatal.
-                // Re-throw them asynchronously to avoid slow-downs.
-                setTimeout(function() {
-                   throw e;
-                }, 0);
-            }
-        }
-
-        if (domain) {
-            domain.exit();
-        }
-    }
-
-    flushing = false;
-}
-
-if (typeof process !== "undefined" && process.nextTick) {
-    // Node.js before 0.9. Note that some fake-Node environments, like the
-    // Mocha test runner, introduce a `process` global without a `nextTick`.
-    isNodeJS = true;
-
-    requestFlush = function () {
-        process.nextTick(flush);
-    };
-
-} else if (typeof setImmediate === "function") {
-    // In IE10, Node.js 0.9+, or https://github.com/NobleJS/setImmediate
-    if (typeof window !== "undefined") {
-        requestFlush = setImmediate.bind(window, flush);
-    } else {
-        requestFlush = function () {
-            setImmediate(flush);
-        };
-    }
-
-} else if (typeof MessageChannel !== "undefined") {
-    // modern browsers
-    // http://www.nonblocking.io/2011/06/windownexttick.html
-    var channel = new MessageChannel();
-    channel.port1.onmessage = flush;
-    requestFlush = function () {
-        channel.port2.postMessage(0);
-    };
-
-} else {
-    // old browsers
-    requestFlush = function () {
-        setTimeout(flush, 0);
-    };
-}
-
-function asap(task) {
-    tail = tail.next = {
-        task: task,
-        domain: isNodeJS && process.domain,
-        next: null
-    };
-
-    if (!flushing) {
-        flushing = true;
-        requestFlush();
-    }
-};
-
-module.exports = asap;
-
-
-}).call(this,_dereq_("/Users/scott/www/divshot/request-builder/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js"))
-},{"/Users/scott/www/divshot/request-builder/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":7}],21:[function(_dereq_,module,exports){
-var path = _dereq_('path');
+},{"./core.js":28,"asap":30}],30:[function(require,module,exports){
+module.exports=require(19)
+},{"/Users/scott/www/divshot/bid/node_modules/httpify/node_modules/promise/node_modules/asap/asap.js":19,"_process":8}],31:[function(require,module,exports){
+var path = require('path');
 var join = path.join;
 var normalize = path.normalize;
 
@@ -1447,6 +1953,5 @@ function objectSlash (original, options) {
 
 module.exports = slasher;
 
-},{"path":8}]},{},[1])
-(1)
+},{"path":7}]},{},[1])(1)
 });

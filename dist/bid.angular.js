@@ -1,4 +1,4 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);throw new Error("Cannot find module '"+o+"'")}var f=n[o]={exports:{}};t[o][0].call(f.exports,function(e){var n=t[o][1][e];return s(n?n:e)},f,f.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 var asArray = require('as-array');
 var slash = require('slasher');
 var request = require('httpify');
@@ -13,8 +13,8 @@ var mockRequestResponse = require('./lib/mock-request-response');
 var HTTP_METHODS = 'GET POST PUT DELETE PATCH OPTIONS'.split(' ');
 
 //
-function RequestBuilder (options) {
-  if (!(this instanceof RequestBuilder)) return new RequestBuilder(options);
+function Bid (options) {
+  if (!(this instanceof Bid)) return new Bid(options);
   if (!options) options = {};
   
   this.origin(options.origin);
@@ -28,37 +28,37 @@ function RequestBuilder (options) {
   }, this);
 }
 
-RequestBuilder.HTTP_METHODS = HTTP_METHODS;
-RequestBuilder.join = urlJoin;
-settings.mixInto(RequestBuilder.prototype);
+Bid.HTTP_METHODS = HTTP_METHODS;
+Bid.join = urlJoin;
+settings.mixInto(Bid.prototype);
 
-RequestBuilder.prototype._rawHttp = function (options) {
+Bid.prototype._rawHttp = function (options) {
   return request(options);
 };
 
-RequestBuilder.prototype.promise = function (callback) {
+Bid.prototype.promise = function (callback) {
   return new Promise(callback);
 };
 
-RequestBuilder.prototype.asPromise = function (data) {
+Bid.prototype.asPromise = function (data) {
   return this.promise(function (resolve) {
     resolve(data);
   });
 };
 
-RequestBuilder.prototype.asRejectedPromise = function (data) {
+Bid.prototype.asRejectedPromise = function (data) {
   return this.promise(function (resolve, reject) {
     reject(data);
   });
 };
 
-RequestBuilder.prototype.mock = function (method, pathname, mockObject) {
+Bid.prototype.mock = function (method, pathname, mockObject) {
   if (mockObject === undefined) return this.mocks[method.toLowerCase()][slash(pathname)]; 
   
   return this.mocks[method.toLowerCase()][slash(pathname)] = mockObject;
 };
 
-RequestBuilder.prototype.http = function (method) {
+Bid.prototype.http = function (method) {
   var rawHttp = this._rawHttp;
   var uri = rest(asArray(arguments)).join('/');
   
@@ -91,14 +91,14 @@ RequestBuilder.prototype.http = function (method) {
   return resource;
 };
 
-RequestBuilder.prototype.when = function (method, pathname) {
+Bid.prototype.when = function (method, pathname) {
   var mockedRequest = mockRequestResponse(this, method, pathname);
   return this.mock(method, pathname, mockedRequest);
 };
 
 // Create help http verb functions
-RequestBuilder.HTTP_METHODS.forEach(function (method) {
-  RequestBuilder.prototype[method.toLowerCase()] = function () {
+Bid.HTTP_METHODS.forEach(function (method) {
+  Bid.prototype[method.toLowerCase()] = function () {
     var args = asArray(arguments);
     args.unshift(method);
     
@@ -111,7 +111,7 @@ function rest (arr) {
 }
 
 //
-module.exports = RequestBuilder;
+module.exports = Bid;
 },{"./lib/mock-request-response":5,"./lib/settings":6,"./lib/url-join":7,"as-array":8,"deap":13,"httpify":10,"promise":10,"slasher":17}],2:[function(require,module,exports){
 'use strict';
 
@@ -139,15 +139,15 @@ module.exports = function ($http, $q) {
 },{}],3:[function(require,module,exports){
 'use strict';
 
-var RequestBuilder = require('../../index.js');
+var Bid = require('../../index.js');
 var angularRequest = require('./angular.http');
 var angularPromise = require('./angular.promise');
 
 //
 // Prepares Rapper for use in AngularJS
 //
-angular.module('requestBuilder', [])
-  .provider('request', function () {
+angular.module('bid', [])
+  .provider('bid', function () {
     var client;
     
     return {
@@ -159,7 +159,7 @@ angular.module('requestBuilder', [])
       
       $get: function ($rootScope, $q, $http) {
         if (!client) {
-          client = new RequestBuilder(this._options);
+          client = new Bid(this._options);
           
           client._rawHttp = angularRequest($http, $q, $rootScope);
           client.promise = angularPromise($q);
@@ -169,11 +169,11 @@ angular.module('requestBuilder', [])
       }
     };
   })
-  .factory('RequestBuilder', function ($q, $http) {
-    RequestBuilder.prototype._rawHttp = angularRequest($http, $q);
-    RequestBuilder.prototype.promise = angularPromise($q);
+  .factory('Bid', function ($q, $http) {
+    Bid.prototype._rawHttp = angularRequest($http, $q);
+    Bid.prototype.promise = angularPromise($q);
     
-    return RequestBuilder;
+    return Bid;
   });
 },{"../../index.js":1,"./angular.http":2,"./angular.promise":4}],4:[function(require,module,exports){
 'use strict';
@@ -385,68 +385,6 @@ module.exports = isArguments;
 },{}],10:[function(require,module,exports){
 
 },{}],11:[function(require,module,exports){
-// shim for using process in browser
-
-var process = module.exports = {};
-
-process.nextTick = (function () {
-    var canSetImmediate = typeof window !== 'undefined'
-    && window.setImmediate;
-    var canPost = typeof window !== 'undefined'
-    && window.postMessage && window.addEventListener
-    ;
-
-    if (canSetImmediate) {
-        return function (f) { return window.setImmediate(f) };
-    }
-
-    if (canPost) {
-        var queue = [];
-        window.addEventListener('message', function (ev) {
-            var source = ev.source;
-            if ((source === window || source === null) && ev.data === 'process-tick') {
-                ev.stopPropagation();
-                if (queue.length > 0) {
-                    var fn = queue.shift();
-                    fn();
-                }
-            }
-        }, true);
-
-        return function nextTick(fn) {
-            queue.push(fn);
-            window.postMessage('process-tick', '*');
-        };
-    }
-
-    return function nextTick(fn) {
-        setTimeout(fn, 0);
-    };
-})();
-
-process.title = 'browser';
-process.browser = true;
-process.env = {};
-process.argv = [];
-
-function noop() {}
-
-process.on = noop;
-process.once = noop;
-process.off = noop;
-process.emit = noop;
-
-process.binding = function (name) {
-    throw new Error('process.binding is not supported');
-}
-
-// TODO(shtylman)
-process.cwd = function () { return '/' };
-process.chdir = function (dir) {
-    throw new Error('process.chdir is not supported');
-};
-
-},{}],12:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -673,8 +611,96 @@ var substr = 'ab'.substr(-1) === 'b'
     }
 ;
 
-}).call(this,require("/Users/scott/www/divshot/request-builder/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js"))
-},{"/Users/scott/www/divshot/request-builder/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":11}],13:[function(require,module,exports){
+}).call(this,require('_process'))
+},{"_process":12}],12:[function(require,module,exports){
+// shim for using process in browser
+
+var process = module.exports = {};
+
+process.nextTick = (function () {
+    var canSetImmediate = typeof window !== 'undefined'
+    && window.setImmediate;
+    var canMutationObserver = typeof window !== 'undefined'
+    && window.MutationObserver;
+    var canPost = typeof window !== 'undefined'
+    && window.postMessage && window.addEventListener
+    ;
+
+    if (canSetImmediate) {
+        return function (f) { return window.setImmediate(f) };
+    }
+
+    var queue = [];
+
+    if (canMutationObserver) {
+        var hiddenDiv = document.createElement("div");
+        var observer = new MutationObserver(function () {
+            var queueList = queue.slice();
+            queue.length = 0;
+            queueList.forEach(function (fn) {
+                fn();
+            });
+        });
+
+        observer.observe(hiddenDiv, { attributes: true });
+
+        return function nextTick(fn) {
+            if (!queue.length) {
+                hiddenDiv.setAttribute('yes', 'no');
+            }
+            queue.push(fn);
+        };
+    }
+
+    if (canPost) {
+        window.addEventListener('message', function (ev) {
+            var source = ev.source;
+            if ((source === window || source === null) && ev.data === 'process-tick') {
+                ev.stopPropagation();
+                if (queue.length > 0) {
+                    var fn = queue.shift();
+                    fn();
+                }
+            }
+        }, true);
+
+        return function nextTick(fn) {
+            queue.push(fn);
+            window.postMessage('process-tick', '*');
+        };
+    }
+
+    return function nextTick(fn) {
+        setTimeout(fn, 0);
+    };
+})();
+
+process.title = 'browser';
+process.browser = true;
+process.env = {};
+process.argv = [];
+
+function noop() {}
+
+process.on = noop;
+process.addListener = noop;
+process.once = noop;
+process.off = noop;
+process.removeListener = noop;
+process.removeAllListeners = noop;
+process.emit = noop;
+
+process.binding = function (name) {
+    throw new Error('process.binding is not supported');
+};
+
+// TODO(shtylman)
+process.cwd = function () { return '/' };
+process.chdir = function (dir) {
+    throw new Error('process.chdir is not supported');
+};
+
+},{}],13:[function(require,module,exports){
 var lib = require('./lib/deap');
 
 var deap = module.exports = lib.extend;
@@ -922,4 +948,4 @@ function objectSlash (original, options) {
 
 module.exports = slasher;
 
-},{"path":12}]},{},[3])
+},{"path":11}]},{},[3]);

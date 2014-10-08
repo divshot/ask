@@ -8,8 +8,8 @@ var minify = require('minify');
 var mkdirp = require('mkdirp');
 
 var ENTRY_FILE = path.resolve(__dirname, '../lib/browser/angular.js');
-var DIST_FILE = path.resolve(__dirname, '../dist/requestbuilder.angular.js');
-var DIST_FILE_MIN = path.resolve(__dirname, '../dist/requestbuilder.angular.min.js');
+var DIST_FILE = path.resolve(__dirname, '../dist/bid.angular.js');
+var DIST_FILE_MIN = path.resolve(__dirname, '../dist/bid.angular.min.js');
 
 // Create dist directory
 mkdirp.sync(path.resolve(__dirname, '../dist'));
@@ -30,9 +30,7 @@ function optimize () {
   fs.writeFileSync(DIST_FILE_MIN, contents);
   
   console.log('Minifying ...\n');
-  minify.optimize(DIST_FILE_MIN, {
-    callback: function (minifiedContents) {
-      fs.writeFileSync(DIST_FILE_MIN, minifiedContents);
-    }
+  minify(DIST_FILE_MIN, function (minifiedContents) {
+    fs.writeFileSync(DIST_FILE_MIN, minifiedContents);
   });
 }
