@@ -1,4 +1,4 @@
-# request-builder
+# bid
 
 A simple, chainable way to construct HTTP requests in Node or the browser (Angular or Standalone);
 
@@ -13,13 +13,13 @@ A simple, chainable way to construct HTTP requests in Node or the browser (Angul
 Bower
 
 ```
-bower install request-builder --save
+bower install bid --save
 ```
 
 NPM
 
 ```
-npm install request-builder --save
+npm install bid --save
 ```
 
 ## Usage
@@ -29,34 +29,34 @@ npm install request-builder --save
 Standalone
 
 ```html
-<script src="/bower_components/request-builder/dist/requestbuilder.js"></script>
+<script src="/bower_components/bid/dist/bid.js"></script>
 ```
 
 Angular
 
 ```html
-<script src="/bower_components/request-builder/dist/requestbuilder.angular.js"></script>
+<script src="/bower_components/bid/dist/bid.angular.js"></script>
 ```
 
 ```js
-var myApp = angular.module('myApp', ['requestBuilder']);
+var myApp = angular.module('myApp', ['bid']);
 
-myApp.config(function (requestProvider) {
+myApp.config(function (bidProvider) {
   
   /* This is optional */
   
-  requestProvider.configure({
+  bidProvider.configure({
     origin: 'http://api.example.com',
     headers: {/* optional default headers */},
     xhrOptions: {/* optional xhr options */}
   });
 });
 
-myApp.controller('SomeController', function (request /* instance of request builder */) {
+myApp.controller('SomeController', function (bid /* instance of Bid */) {
   
 });
 
-myApp.controller('AnotherController', function (RequestBuilder /* ready to instantiate */) {
+myApp.controller('AnotherController', function (Bid /* ready to instantiate */) {
   
 })
 ```
@@ -64,7 +64,7 @@ myApp.controller('AnotherController', function (RequestBuilder /* ready to insta
 Nodejs/Browserify
 
 ```js
-var requestBuilder = require('request-builder');
+var bid = require('bid');
 ```
 
 ### How to Build Requests
@@ -72,7 +72,7 @@ var requestBuilder = require('request-builder');
 Simple `GET` request
 
 ```js
-var request = requestBuilder({
+var request = bid({
   origin: '', /* default origin */
   headers: {/* set default headers */},
   xhrOptions: {/* default xhr options */
@@ -102,7 +102,7 @@ getUserFriends().then(function (res) {
 Simple `POST` request
 
 ```js
-var request = requestBuilder();
+var request = bid();
 
 request.origin('http://api.example.com');
 
@@ -124,12 +124,13 @@ createUser({
 
 ## Mocking HTTP Requests
 
-A usefule feature with Request Builder is the ability to intercept http/xhr requests and provide custom response attributes, such as statusCode, headers, etc. This is is very helpful when testing code that uses the Request Builder module.
+A useful feature with Bid is the ability to intercept http/xhr requests and provide custom response attributes, such as statusCode, headers, etc. This is is very helpful when testing code that uses the Bid module.
 
 Before building a request:
 
 ```js
-var request = require('requestBuilder');
+var bid = require('bid');
+var request = bid();
 
 request
   .when('GET', '/some/path')
