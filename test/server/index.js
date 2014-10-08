@@ -1,14 +1,14 @@
 var expect = require('chai').expect;
 var Mocksy = require('mocksy');
 var server = new Mocksy({port: 9876});
-var RequestBuilder = require('../../index.js');
+var bid = require('../../index.js');
 var ORIGIN = 'http://localhost:9876';
 
 describe('request instance', function () {
   var request;
   
   beforeEach(function (done) {
-    request = new RequestBuilder();
+    request = bid();
     server.start(done);
   });
   
@@ -17,7 +17,7 @@ describe('request instance', function () {
   });
   
   it('sets defaults in the contructor', function () {
-    request = new RequestBuilder({
+    request = bid({
       origin: ORIGIN,
       headers: {
         'Authorization': 'Bearer 1234'
@@ -82,7 +82,7 @@ describe('making bare requests', function () {
   var request;
   
   beforeEach(function (done) {
-    request = new RequestBuilder();
+    request = bid();
     server.start(done);
   });
   
@@ -100,7 +100,7 @@ describe('making bare requests', function () {
   });
   
   // Helpers
-  RequestBuilder.HTTP_METHODS.forEach(function (method) {
+  bid.HTTP_METHODS.forEach(function (method) {
     
     // EXAMPLE: request.get('url', 123)
     
@@ -131,7 +131,7 @@ describe('setting options', function () {
   var requester;
   
   beforeEach(function (done) {
-    request = new RequestBuilder();
+    request = bid();
     server.start(done);
   });
   
@@ -231,7 +231,7 @@ describe('query strings', function () {
   var request;
   
   beforeEach(function (done) {
-    request = new RequestBuilder();
+    request = bid();
     server.start(done);
   });
   

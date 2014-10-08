@@ -49,10 +49,10 @@
   },
   "dependencies": {
     "httpify": "^1.0.0",
-    "as-array": "~0.1.2",
-    "slasher": "~0.1.4",
-    "promise": "~4.0.0",
-    "mix-into": "~0.3.0",
-    "deap": "~0.2.2"
+    "as-array": "^1.0.0",
+    "slasher": "^0.1.5",
+    "promise": "^6.0.0",
+    "mix-into": "^0.4.0",
+    "deap": "^1.0.0"
   }
 }

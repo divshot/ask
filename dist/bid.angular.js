@@ -112,7 +112,7 @@ function rest (arr) {
 
 //
 module.exports = Bid;
-},{"./lib/mock-request-response":5,"./lib/settings":6,"./lib/url-join":7,"as-array":8,"deap":13,"httpify":10,"promise":10,"slasher":17}],2:[function(require,module,exports){
+},{"./lib/mock-request-response":5,"./lib/settings":6,"./lib/url-join":7,"as-array":8,"deap":20,"httpify":17,"promise":17,"slasher":24}],2:[function(require,module,exports){
 'use strict';
 
 module.exports = function ($http, $q) {
@@ -316,7 +316,7 @@ function parseQueryString (queryObject) {
   
   return qs.join('&');
 }
-},{"./url-join":7,"deap":13,"mix-into":16}],7:[function(require,module,exports){
+},{"./url-join":7,"deap":20,"mix-into":23}],7:[function(require,module,exports){
 function normalize (str) {
   return str
           .replace(/[\/]+/g, '/')
@@ -331,16 +331,28 @@ module.exports = function () {
 };
 },{}],8:[function(require,module,exports){
 var isArgs = require('lodash.isarguments');
+var isObject = require('lodash.isobject');
+var values = require('lodash.values');
 
-module.exports = function (data) {
-  if (!data) data = [];
-  if (isArgs(data)) data = [].splice.call(data, 0);
+module.exports = function (data, convertObject) {
+  
+  if (!data) {
+    data = [];
+  }
+  
+  if (isArgs(data)) {
+    data = [].splice.call(data, 0);
+  }
+  
+  if (isObject(data) && convertObject) {
+    data = values(data);
+  }
   
   return Array.isArray(data)
     ? data
     : [data];
 };
-},{"lodash.isarguments":9}],9:[function(require,module,exports){
+},{"lodash.isarguments":9,"lodash.isobject":10,"lodash.values":12}],9:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -383,8 +395,225 @@ function isArguments(value) {
 module.exports = isArguments;
 
 },{}],10:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var objectTypes = require('lodash._objecttypes');
 
-},{}],11:[function(require,module,exports){
+/**
+ * Checks if `value` is the language type of Object.
+ * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * @static
+ * @memberOf _
+ * @category Objects
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if the `value` is an object, else `false`.
+ * @example
+ *
+ * _.isObject({});
+ * // => true
+ *
+ * _.isObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isObject(1);
+ * // => false
+ */
+function isObject(value) {
+  // check if the value is the ECMAScript language type of Object
+  // http://es5.github.io/#x8
+  // and avoid a V8 bug
+  // http://code.google.com/p/v8/issues/detail?id=2291
+  return !!(value && objectTypes[typeof value]);
+}
+
+module.exports = isObject;
+
+},{"lodash._objecttypes":11}],11:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/** Used to determine if values are of the language type Object */
+var objectTypes = {
+  'boolean': false,
+  'function': true,
+  'object': true,
+  'number': false,
+  'string': false,
+  'undefined': false
+};
+
+module.exports = objectTypes;
+
+},{}],12:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var keys = require('lodash.keys');
+
+/**
+ * Creates an array composed of the own enumerable property values of `object`.
+ *
+ * @static
+ * @memberOf _
+ * @category Objects
+ * @param {Object} object The object to inspect.
+ * @returns {Array} Returns an array of property values.
+ * @example
+ *
+ * _.values({ 'one': 1, 'two': 2, 'three': 3 });
+ * // => [1, 2, 3] (property order is not guaranteed across environments)
+ */
+function values(object) {
+  var index = -1,
+      props = keys(object),
+      length = props.length,
+      result = Array(length);
+
+  while (++index < length) {
+    result[index] = object[props[index]];
+  }
+  return result;
+}
+
+module.exports = values;
+
+},{"lodash.keys":13}],13:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var isNative = require('lodash._isnative'),
+    isObject = require('lodash.isobject'),
+    shimKeys = require('lodash._shimkeys');
+
+/* Native method shortcuts for methods with the same name as other `lodash` methods */
+var nativeKeys = isNative(nativeKeys = Object.keys) && nativeKeys;
+
+/**
+ * Creates an array composed of the own enumerable property names of an object.
+ *
+ * @static
+ * @memberOf _
+ * @category Objects
+ * @param {Object} object The object to inspect.
+ * @returns {Array} Returns an array of property names.
+ * @example
+ *
+ * _.keys({ 'one': 1, 'two': 2, 'three': 3 });
+ * // => ['one', 'two', 'three'] (property order is not guaranteed across environments)
+ */
+var keys = !nativeKeys ? shimKeys : function(object) {
+  if (!isObject(object)) {
+    return [];
+  }
+  return nativeKeys(object);
+};
+
+module.exports = keys;
+
+},{"lodash._isnative":14,"lodash._shimkeys":15,"lodash.isobject":10}],14:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/** Used for native method references */
+var objectProto = Object.prototype;
+
+/** Used to resolve the internal [[Class]] of values */
+var toString = objectProto.toString;
+
+/** Used to detect if a method is native */
+var reNative = RegExp('^' +
+  String(toString)
+    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    .replace(/toString| for [^\]]+/g, '.*?') + '$'
+);
+
+/**
+ * Checks if `value` is a native function.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if the `value` is a native function, else `false`.
+ */
+function isNative(value) {
+  return typeof value == 'function' && reNative.test(value);
+}
+
+module.exports = isNative;
+
+},{}],15:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var objectTypes = require('lodash._objecttypes');
+
+/** Used for native method references */
+var objectProto = Object.prototype;
+
+/** Native method shortcuts */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * A fallback implementation of `Object.keys` which produces an array of the
+ * given object's own enumerable property names.
+ *
+ * @private
+ * @type Function
+ * @param {Object} object The object to inspect.
+ * @returns {Array} Returns an array of property names.
+ */
+var shimKeys = function(object) {
+  var index, iterable = object, result = [];
+  if (!iterable) return result;
+  if (!(objectTypes[typeof object])) return result;
+    for (index in iterable) {
+      if (hasOwnProperty.call(iterable, index)) {
+        result.push(index);
+      }
+    }
+  return result
+};
+
+module.exports = shimKeys;
+
+},{"lodash._objecttypes":16}],16:[function(require,module,exports){
+module.exports=require(11)
+},{"/Users/scott/www/divshot/bid/node_modules/as-array/node_modules/lodash.isobject/node_modules/lodash._objecttypes/index.js":11}],17:[function(require,module,exports){
+
+},{}],18:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -612,7 +841,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":12}],12:[function(require,module,exports){
+},{"_process":19}],19:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -700,7 +929,7 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],13:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 var lib = require('./lib/deap');
 
 var deap = module.exports = lib.extend;
@@ -716,7 +945,7 @@ deap(deap, {
 	mergeShallow: lib.mergeShallow
 });
 
-},{"./lib/deap":14}],14:[function(require,module,exports){
+},{"./lib/deap":21}],21:[function(require,module,exports){
 var typeOf = require('./typeof'),
 	slice = Array.prototype.slice;
 
@@ -839,7 +1068,7 @@ function deepMerge(a, b /*, [b2..n] */) {
 	return a;
 }
 
-},{"./typeof":15}],15:[function(require,module,exports){
+},{"./typeof":22}],22:[function(require,module,exports){
 
 module.exports = function(obj) {
 	var t = typeof obj;
@@ -860,8 +1089,8 @@ module.exports = function(obj) {
 	return 'object';
 };
 
-},{}],16:[function(require,module,exports){
-var clone = require('deap').cone;
+},{}],23:[function(require,module,exports){
+var clone = require('deap').clone;
 
 var mix = function (source) {
   return new Mix(source);
@@ -892,6 +1121,10 @@ Mix.prototype.into = function (target) {
   return target;
 };
 
+Mix.prototype.intoClone = function (target) {
+  return this.into(clone(target));
+};
+
 Mix.prototype.mixInto = function (target) {
   return this.into(target);
 };
@@ -905,7 +1138,7 @@ function mixInto (source) {
 }
 
 module.exports = mix;
-},{"deap":13}],17:[function(require,module,exports){
+},{"deap":20}],24:[function(require,module,exports){
 var path = require('path');
 var join = path.join;
 var normalize = path.normalize;
@@ -948,4 +1181,4 @@ function objectSlash (original, options) {
 
 module.exports = slasher;
 
-},{"path":11}]},{},[3]);
+},{"path":18}]},{},[3]);

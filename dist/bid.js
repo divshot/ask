@@ -112,7 +112,7 @@ function rest (arr) {
 
 //
 module.exports = Bid;
-},{"./lib/mock-request-response":2,"./lib/settings":3,"./lib/url-join":4,"as-array":5,"deap":9,"httpify":12,"promise":29,"slasher":31}],2:[function(require,module,exports){
+},{"./lib/mock-request-response":2,"./lib/settings":3,"./lib/url-join":4,"as-array":5,"deap":16,"httpify":19,"promise":35,"slasher":41}],2:[function(require,module,exports){
 module.exports = function (context, method, pathname) {
   return {
     context: context,
@@ -237,7 +237,7 @@ function parseQueryString (queryObject) {
   
   return qs.join('&');
 }
-},{"./url-join":4,"deap":9,"mix-into":27}],4:[function(require,module,exports){
+},{"./url-join":4,"deap":16,"mix-into":34}],4:[function(require,module,exports){
 function normalize (str) {
   return str
           .replace(/[\/]+/g, '/')
@@ -252,16 +252,28 @@ module.exports = function () {
 };
 },{}],5:[function(require,module,exports){
 var isArgs = require('lodash.isarguments');
+var isObject = require('lodash.isobject');
+var values = require('lodash.values');
 
-module.exports = function (data) {
-  if (!data) data = [];
-  if (isArgs(data)) data = [].splice.call(data, 0);
+module.exports = function (data, convertObject) {
+  
+  if (!data) {
+    data = [];
+  }
+  
+  if (isArgs(data)) {
+    data = [].splice.call(data, 0);
+  }
+  
+  if (isObject(data) && convertObject) {
+    data = values(data);
+  }
   
   return Array.isArray(data)
     ? data
     : [data];
 };
-},{"lodash.isarguments":6}],6:[function(require,module,exports){
+},{"lodash.isarguments":6,"lodash.isobject":7,"lodash.values":9}],6:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -304,6 +316,223 @@ function isArguments(value) {
 module.exports = isArguments;
 
 },{}],7:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var objectTypes = require('lodash._objecttypes');
+
+/**
+ * Checks if `value` is the language type of Object.
+ * (e.g. arrays, functions, objects, regexes, `new Number(0)`, and `new String('')`)
+ *
+ * @static
+ * @memberOf _
+ * @category Objects
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if the `value` is an object, else `false`.
+ * @example
+ *
+ * _.isObject({});
+ * // => true
+ *
+ * _.isObject([1, 2, 3]);
+ * // => true
+ *
+ * _.isObject(1);
+ * // => false
+ */
+function isObject(value) {
+  // check if the value is the ECMAScript language type of Object
+  // http://es5.github.io/#x8
+  // and avoid a V8 bug
+  // http://code.google.com/p/v8/issues/detail?id=2291
+  return !!(value && objectTypes[typeof value]);
+}
+
+module.exports = isObject;
+
+},{"lodash._objecttypes":8}],8:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/** Used to determine if values are of the language type Object */
+var objectTypes = {
+  'boolean': false,
+  'function': true,
+  'object': true,
+  'number': false,
+  'string': false,
+  'undefined': false
+};
+
+module.exports = objectTypes;
+
+},{}],9:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var keys = require('lodash.keys');
+
+/**
+ * Creates an array composed of the own enumerable property values of `object`.
+ *
+ * @static
+ * @memberOf _
+ * @category Objects
+ * @param {Object} object The object to inspect.
+ * @returns {Array} Returns an array of property values.
+ * @example
+ *
+ * _.values({ 'one': 1, 'two': 2, 'three': 3 });
+ * // => [1, 2, 3] (property order is not guaranteed across environments)
+ */
+function values(object) {
+  var index = -1,
+      props = keys(object),
+      length = props.length,
+      result = Array(length);
+
+  while (++index < length) {
+    result[index] = object[props[index]];
+  }
+  return result;
+}
+
+module.exports = values;
+
+},{"lodash.keys":10}],10:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var isNative = require('lodash._isnative'),
+    isObject = require('lodash.isobject'),
+    shimKeys = require('lodash._shimkeys');
+
+/* Native method shortcuts for methods with the same name as other `lodash` methods */
+var nativeKeys = isNative(nativeKeys = Object.keys) && nativeKeys;
+
+/**
+ * Creates an array composed of the own enumerable property names of an object.
+ *
+ * @static
+ * @memberOf _
+ * @category Objects
+ * @param {Object} object The object to inspect.
+ * @returns {Array} Returns an array of property names.
+ * @example
+ *
+ * _.keys({ 'one': 1, 'two': 2, 'three': 3 });
+ * // => ['one', 'two', 'three'] (property order is not guaranteed across environments)
+ */
+var keys = !nativeKeys ? shimKeys : function(object) {
+  if (!isObject(object)) {
+    return [];
+  }
+  return nativeKeys(object);
+};
+
+module.exports = keys;
+
+},{"lodash._isnative":11,"lodash._shimkeys":12,"lodash.isobject":7}],11:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+
+/** Used for native method references */
+var objectProto = Object.prototype;
+
+/** Used to resolve the internal [[Class]] of values */
+var toString = objectProto.toString;
+
+/** Used to detect if a method is native */
+var reNative = RegExp('^' +
+  String(toString)
+    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    .replace(/toString| for [^\]]+/g, '.*?') + '$'
+);
+
+/**
+ * Checks if `value` is a native function.
+ *
+ * @private
+ * @param {*} value The value to check.
+ * @returns {boolean} Returns `true` if the `value` is a native function, else `false`.
+ */
+function isNative(value) {
+  return typeof value == 'function' && reNative.test(value);
+}
+
+module.exports = isNative;
+
+},{}],12:[function(require,module,exports){
+/**
+ * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
+ * Build: `lodash modularize modern exports="npm" -o ./npm/`
+ * Copyright 2012-2013 The Dojo Foundation <http://dojofoundation.org/>
+ * Based on Underscore.js 1.5.2 <http://underscorejs.org/LICENSE>
+ * Copyright 2009-2013 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+ * Available under MIT license <http://lodash.com/license>
+ */
+var objectTypes = require('lodash._objecttypes');
+
+/** Used for native method references */
+var objectProto = Object.prototype;
+
+/** Native method shortcuts */
+var hasOwnProperty = objectProto.hasOwnProperty;
+
+/**
+ * A fallback implementation of `Object.keys` which produces an array of the
+ * given object's own enumerable property names.
+ *
+ * @private
+ * @type Function
+ * @param {Object} object The object to inspect.
+ * @returns {Array} Returns an array of property names.
+ */
+var shimKeys = function(object) {
+  var index, iterable = object, result = [];
+  if (!iterable) return result;
+  if (!(objectTypes[typeof object])) return result;
+    for (index in iterable) {
+      if (hasOwnProperty.call(iterable, index)) {
+        result.push(index);
+      }
+    }
+  return result
+};
+
+module.exports = shimKeys;
+
+},{"lodash._objecttypes":13}],13:[function(require,module,exports){
+module.exports=require(8)
+},{"/Users/scott/www/divshot/bid/node_modules/as-array/node_modules/lodash.isobject/node_modules/lodash._objecttypes/index.js":8}],14:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -531,7 +760,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":8}],8:[function(require,module,exports){
+},{"_process":15}],15:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -619,7 +848,7 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],9:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 var lib = require('./lib/deap');
 
 var deap = module.exports = lib.extend;
@@ -635,7 +864,7 @@ deap(deap, {
 	mergeShallow: lib.mergeShallow
 });
 
-},{"./lib/deap":10}],10:[function(require,module,exports){
+},{"./lib/deap":17}],17:[function(require,module,exports){
 var typeOf = require('./typeof'),
 	slice = Array.prototype.slice;
 
@@ -758,7 +987,7 @@ function deepMerge(a, b /*, [b2..n] */) {
 	return a;
 }
 
-},{"./typeof":11}],11:[function(require,module,exports){
+},{"./typeof":18}],18:[function(require,module,exports){
 
 module.exports = function(obj) {
 	var t = typeof obj;
@@ -779,7 +1008,7 @@ module.exports = function(obj) {
 	return 'object';
 };
 
-},{}],12:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var Promise = require('promise');
 var request = require('request');
 
@@ -811,7 +1040,7 @@ module.exports = function (options, callback) {
     });
   });
 };
-},{"promise":14,"request":13}],13:[function(require,module,exports){
+},{"promise":21,"request":20}],20:[function(require,module,exports){
 var request = require('xhr');
 
 // Wrapper to make the features more similiar between
@@ -841,14 +1070,14 @@ module.exports = function (options, callback) {
   
   return request(options, callback);
 };
-},{"xhr":20}],14:[function(require,module,exports){
+},{"xhr":27}],21:[function(require,module,exports){
 'use strict';
 
 module.exports = require('./lib/core.js')
 require('./lib/done.js')
 require('./lib/es6-extensions.js')
 require('./lib/node-extensions.js')
-},{"./lib/core.js":15,"./lib/done.js":16,"./lib/es6-extensions.js":17,"./lib/node-extensions.js":18}],15:[function(require,module,exports){
+},{"./lib/core.js":22,"./lib/done.js":23,"./lib/es6-extensions.js":24,"./lib/node-extensions.js":25}],22:[function(require,module,exports){
 'use strict';
 
 var asap = require('asap')
@@ -955,7 +1184,7 @@ function doResolve(fn, onFulfilled, onRejected) {
   }
 }
 
-},{"asap":19}],16:[function(require,module,exports){
+},{"asap":26}],23:[function(require,module,exports){
 'use strict';
 
 var Promise = require('./core.js')
@@ -970,7 +1199,7 @@ Promise.prototype.done = function (onFulfilled, onRejected) {
     })
   })
 }
-},{"./core.js":15,"asap":19}],17:[function(require,module,exports){
+},{"./core.js":22,"asap":26}],24:[function(require,module,exports){
 'use strict';
 
 //This file contains the ES6 extensions to the core Promises/A+ API
@@ -1080,7 +1309,7 @@ Promise.prototype['catch'] = function (onRejected) {
   return this.then(null, onRejected);
 }
 
-},{"./core.js":15,"asap":19}],18:[function(require,module,exports){
+},{"./core.js":22,"asap":26}],25:[function(require,module,exports){
 'use strict';
 
 //This file contains then/promise specific extensions that are only useful for node.js interop
@@ -1142,7 +1371,7 @@ Promise.prototype.nodeify = function (callback, ctx) {
   })
 }
 
-},{"./core.js":15,"asap":19}],19:[function(require,module,exports){
+},{"./core.js":22,"asap":26}],26:[function(require,module,exports){
 (function (process){
 
 // Use the fastest possible means to execute a task in a future turn
@@ -1259,7 +1488,7 @@ module.exports = asap;
 
 
 }).call(this,require('_process'))
-},{"_process":8}],20:[function(require,module,exports){
+},{"_process":15}],27:[function(require,module,exports){
 var window = require("global/window")
 var once = require("once")
 var parseHeaders = require('parse-headers')
@@ -1437,7 +1666,7 @@ function createXHR(options, callback) {
 
 function noop() {}
 
-},{"global/window":21,"once":22,"parse-headers":26}],21:[function(require,module,exports){
+},{"global/window":28,"once":29,"parse-headers":33}],28:[function(require,module,exports){
 (function (global){
 if (typeof window !== "undefined") {
     module.exports = window;
@@ -1448,7 +1677,7 @@ if (typeof window !== "undefined") {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],22:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 module.exports = once
 
 once.proto = once(function () {
@@ -1469,7 +1698,7 @@ function once (fn) {
   }
 }
 
-},{}],23:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 var isFunction = require('is-function')
 
 module.exports = forEach
@@ -1517,7 +1746,7 @@ function forEachObject(object, iterator, context) {
     }
 }
 
-},{"is-function":24}],24:[function(require,module,exports){
+},{"is-function":31}],31:[function(require,module,exports){
 module.exports = isFunction
 
 var toString = Object.prototype.toString
@@ -1534,7 +1763,7 @@ function isFunction (fn) {
       fn === window.prompt))
 };
 
-},{}],25:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 
 exports = module.exports = trim;
 
@@ -1550,7 +1779,7 @@ exports.right = function(str){
   return str.replace(/\s*$/, '');
 };
 
-},{}],26:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 var trim = require('trim')
   , forEach = require('for-each')
   , isArray = function(arg) {
@@ -1582,8 +1811,8 @@ module.exports = function (headers) {
 
   return result
 }
-},{"for-each":23,"trim":25}],27:[function(require,module,exports){
-var clone = require('deap').cone;
+},{"for-each":30,"trim":32}],34:[function(require,module,exports){
+var clone = require('deap').clone;
 
 var mix = function (source) {
   return new Mix(source);
@@ -1614,6 +1843,10 @@ Mix.prototype.into = function (target) {
   return target;
 };
 
+Mix.prototype.intoClone = function (target) {
+  return this.into(clone(target));
+};
+
 Mix.prototype.mixInto = function (target) {
   return this.into(target);
 };
@@ -1627,290 +1860,19 @@ function mixInto (source) {
 }
 
 module.exports = mix;
-},{"deap":9}],28:[function(require,module,exports){
-'use strict';
-
-var asap = require('asap')
-
-module.exports = Promise
-function Promise(fn) {
-  if (typeof this !== 'object') throw new TypeError('Promises must be constructed via new')
-  if (typeof fn !== 'function') throw new TypeError('not a function')
-  var state = null
-  var value = null
-  var deferreds = []
-  var self = this
-
-  this.then = function(onFulfilled, onRejected) {
-    return new Promise(function(resolve, reject) {
-      handle(new Handler(onFulfilled, onRejected, resolve, reject))
-    })
-  }
-
-  function handle(deferred) {
-    if (state === null) {
-      deferreds.push(deferred)
-      return
-    }
-    asap(function() {
-      var cb = state ? deferred.onFulfilled : deferred.onRejected
-      if (cb === null) {
-        (state ? deferred.resolve : deferred.reject)(value)
-        return
-      }
-      var ret
-      try {
-        ret = cb(value)
-      }
-      catch (e) {
-        deferred.reject(e)
-        return
-      }
-      deferred.resolve(ret)
-    })
-  }
-
-  function resolve(newValue) {
-    try { //Promise Resolution Procedure: https://github.com/promises-aplus/promises-spec#the-promise-resolution-procedure
-      if (newValue === self) throw new TypeError('A promise cannot be resolved with itself.')
-      if (newValue && (typeof newValue === 'object' || typeof newValue === 'function')) {
-        var then = newValue.then
-        if (typeof then === 'function') {
-          doResolve(then.bind(newValue), resolve, reject)
-          return
-        }
-      }
-      state = true
-      value = newValue
-      finale()
-    } catch (e) { reject(e) }
-  }
-
-  function reject(newValue) {
-    state = false
-    value = newValue
-    finale()
-  }
-
-  function finale() {
-    for (var i = 0, len = deferreds.length; i < len; i++)
-      handle(deferreds[i])
-    deferreds = null
-  }
-
-  doResolve(fn, resolve, reject)
-}
-
-
-function Handler(onFulfilled, onRejected, resolve, reject){
-  this.onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : null
-  this.onRejected = typeof onRejected === 'function' ? onRejected : null
-  this.resolve = resolve
-  this.reject = reject
-}
-
-/**
- * Take a potentially misbehaving resolver function and make sure
- * onFulfilled and onRejected are only called once.
- *
- * Makes no guarantees about asynchrony.
- */
-function doResolve(fn, onFulfilled, onRejected) {
-  var done = false;
-  try {
-    fn(function (value) {
-      if (done) return
-      done = true
-      onFulfilled(value)
-    }, function (reason) {
-      if (done) return
-      done = true
-      onRejected(reason)
-    })
-  } catch (ex) {
-    if (done) return
-    done = true
-    onRejected(ex)
-  }
-}
-
-},{"asap":30}],29:[function(require,module,exports){
-'use strict';
-
-//This file contains then/promise specific extensions to the core promise API
-
-var Promise = require('./core.js')
-var asap = require('asap')
-
-module.exports = Promise
-
-/* Static Functions */
-
-function ValuePromise(value) {
-  this.then = function (onFulfilled) {
-    if (typeof onFulfilled !== 'function') return this
-    return new Promise(function (resolve, reject) {
-      asap(function () {
-        try {
-          resolve(onFulfilled(value))
-        } catch (ex) {
-          reject(ex);
-        }
-      })
-    })
-  }
-}
-ValuePromise.prototype = Object.create(Promise.prototype)
-
-var TRUE = new ValuePromise(true)
-var FALSE = new ValuePromise(false)
-var NULL = new ValuePromise(null)
-var UNDEFINED = new ValuePromise(undefined)
-var ZERO = new ValuePromise(0)
-var EMPTYSTRING = new ValuePromise('')
-
-Promise.from = Promise.cast = function (value) {
-  if (value instanceof Promise) return value
-
-  if (value === null) return NULL
-  if (value === undefined) return UNDEFINED
-  if (value === true) return TRUE
-  if (value === false) return FALSE
-  if (value === 0) return ZERO
-  if (value === '') return EMPTYSTRING
-
-  if (typeof value === 'object' || typeof value === 'function') {
-    try {
-      var then = value.then
-      if (typeof then === 'function') {
-        return new Promise(then.bind(value))
-      }
-    } catch (ex) {
-      return new Promise(function (resolve, reject) {
-        reject(ex)
-      })
-    }
-  }
-
-  return new ValuePromise(value)
-}
-Promise.denodeify = function (fn, argumentCount) {
-  argumentCount = argumentCount || Infinity
-  return function () {
-    var self = this
-    var args = Array.prototype.slice.call(arguments)
-    return new Promise(function (resolve, reject) {
-      while (args.length && args.length > argumentCount) {
-        args.pop()
-      }
-      args.push(function (err, res) {
-        if (err) reject(err)
-        else resolve(res)
-      })
-      fn.apply(self, args)
-    })
-  }
-}
-Promise.nodeify = function (fn) {
-  return function () {
-    var args = Array.prototype.slice.call(arguments)
-    var callback = typeof args[args.length - 1] === 'function' ? args.pop() : null
-    try {
-      return fn.apply(this, arguments).nodeify(callback)
-    } catch (ex) {
-      if (callback === null || typeof callback == 'undefined') {
-        return new Promise(function (resolve, reject) { reject(ex) })
-      } else {
-        asap(function () {
-          callback(ex)
-        })
-      }
-    }
-  }
-}
-
-Promise.all = function () {
-  var args = Array.prototype.slice.call(arguments.length === 1 && Array.isArray(arguments[0]) ? arguments[0] : arguments)
-
-  return new Promise(function (resolve, reject) {
-    if (args.length === 0) return resolve([])
-    var remaining = args.length
-    function res(i, val) {
-      try {
-        if (val && (typeof val === 'object' || typeof val === 'function')) {
-          var then = val.then
-          if (typeof then === 'function') {
-            then.call(val, function (val) { res(i, val) }, reject)
-            return
-          }
-        }
-        args[i] = val
-        if (--remaining === 0) {
-          resolve(args);
-        }
-      } catch (ex) {
-        reject(ex)
-      }
-    }
-    for (var i = 0; i < args.length; i++) {
-      res(i, args[i])
-    }
-  })
-}
-
-/* Prototype Methods */
-
-Promise.prototype.done = function (onFulfilled, onRejected) {
-  var self = arguments.length ? this.then.apply(this, arguments) : this
-  self.then(null, function (err) {
-    asap(function () {
-      throw err
-    })
-  })
-}
-
-Promise.prototype.nodeify = function (callback) {
-  if (callback === null || typeof callback == 'undefined') return this
-
-  this.then(function (value) {
-    asap(function () {
-      callback(null, value)
-    })
-  }, function (err) {
-    asap(function () {
-      callback(err)
-    })
-  })
-}
-
-Promise.prototype.catch = function (onRejected) {
-  return this.then(null, onRejected);
-}
-
-
-Promise.resolve = function (value) {
-  return new Promise(function (resolve) { 
-    resolve(value);
-  });
-}
-
-Promise.reject = function (value) {
-  return new Promise(function (resolve, reject) { 
-    reject(value);
-  });
-}
-
-Promise.race = function (values) {
-  return new Promise(function (resolve, reject) { 
-    values.map(function(value){
-      Promise.cast(value).then(resolve, reject);
-    })
-  });
-}
-
-},{"./core.js":28,"asap":30}],30:[function(require,module,exports){
-module.exports=require(19)
-},{"/Users/scott/www/divshot/bid/node_modules/httpify/node_modules/promise/node_modules/asap/asap.js":19,"_process":8}],31:[function(require,module,exports){
+},{"deap":16}],35:[function(require,module,exports){
+module.exports=require(21)
+},{"./lib/core.js":36,"./lib/done.js":37,"./lib/es6-extensions.js":38,"./lib/node-extensions.js":39,"/Users/scott/www/divshot/bid/node_modules/httpify/node_modules/promise/index.js":21}],36:[function(require,module,exports){
+module.exports=require(22)
+},{"/Users/scott/www/divshot/bid/node_modules/httpify/node_modules/promise/lib/core.js":22,"asap":40}],37:[function(require,module,exports){
+module.exports=require(23)
+},{"./core.js":36,"/Users/scott/www/divshot/bid/node_modules/httpify/node_modules/promise/lib/done.js":23,"asap":40}],38:[function(require,module,exports){
+module.exports=require(24)
+},{"./core.js":36,"/Users/scott/www/divshot/bid/node_modules/httpify/node_modules/promise/lib/es6-extensions.js":24,"asap":40}],39:[function(require,module,exports){
+module.exports=require(25)
+},{"./core.js":36,"/Users/scott/www/divshot/bid/node_modules/httpify/node_modules/promise/lib/node-extensions.js":25,"asap":40}],40:[function(require,module,exports){
+module.exports=require(26)
+},{"/Users/scott/www/divshot/bid/node_modules/httpify/node_modules/promise/node_modules/asap/asap.js":26,"_process":15}],41:[function(require,module,exports){
 var path = require('path');
 var join = path.join;
 var normalize = path.normalize;
@@ -1953,5 +1915,5 @@ function objectSlash (original, options) {
 
 module.exports = slasher;
 
-},{"path":7}]},{},[1])(1)
+},{"path":14}]},{},[1])(1)
 });
