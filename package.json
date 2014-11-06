@@ -1,6 +1,6 @@
 {
-  "name": "bid",
-  "version": "1.0.0",
+  "name": "ask",
+  "version": "1.1.0",
   "description": "A simple, chainable way to construct HTTP requests in Node or the browser",
   "main": "index.js",
   "directories": {
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/divshot/bid.git"
+    "url": "https://github.com/divshot/ask.git"
   },
   "keywords": [
     "request",
@@ -29,9 +29,9 @@
   "author": "Divshot",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/divshot/bid/issues"
+    "url": "https://github.com/divshot/ask/issues"
   },
-  "homepage": "https://github.com/divshot/bid",
+  "homepage": "https://github.com/divshot/ask",
   "devDependencies": {
     "browserify": "^6.0.3",
     "chai": "^1.9.2",
@@ -48,11 +48,12 @@
     "testling": "^1.7.1"
   },
   "dependencies": {
-    "httpify": "^1.0.0",
     "as-array": "^1.0.0",
-    "slasher": "^0.1.5",
-    "promise": "^6.0.0",
+    "deap": "^1.0.0",
+    "httpify": "^1.0.0",
+    "join-path": "^1.0.0",
     "mix-into": "^0.4.0",
-    "deap": "^1.0.0"
+    "promise": "^6.0.0",
+    "slasher": "^0.1.5"
   }
 }

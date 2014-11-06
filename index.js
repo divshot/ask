@@ -1,19 +1,19 @@
 var asArray = require('as-array');
 var slash = require('slasher');
 var request = require('httpify');
-var urlJoin = require('./lib/url-join');
+var join = require('join-path');
 var Promise = require('promise');
 var deap = require('deap');
 var clone = deap.clone;
 var extend = deap.extend;
-var settings = require('./lib/settings');
+var proto = require('./lib/proto');
 var mockRequestResponse = require('./lib/mock-request-response');
 
 var HTTP_METHODS = 'GET POST PUT DELETE PATCH OPTIONS'.split(' ');
 
 //
-function Bid (options) {
-  if (!(this instanceof Bid)) return new Bid(options);
+function Ask (options) {
+  if (!(this instanceof Ask)) return new Ask(options);
   if (!options) options = {};
   
   this.origin(options.origin);
@@ -27,37 +27,37 @@ function Bid (options) {
   }, this);
 }
 
-Bid.HTTP_METHODS = HTTP_METHODS;
-Bid.join = urlJoin;
-settings.mixInto(Bid.prototype);
+Ask.HTTP_METHODS = HTTP_METHODS;
+Ask.join = join;
+proto.mixInto(Ask.prototype);
 
-Bid.prototype._rawHttp = function (options) {
+Ask.prototype._rawHttp = function (options) {
   return request(options);
 };
 
-Bid.prototype.promise = function (callback) {
+Ask.prototype.promise = function (callback) {
   return new Promise(callback);
 };
 
-Bid.prototype.asPromise = function (data) {
+Ask.prototype.asPromise = function (data) {
   return this.promise(function (resolve) {
     resolve(data);
   });
 };
 
-Bid.prototype.asRejectedPromise = function (data) {
+Ask.prototype.asRejectedPromise = function (data) {
   return this.promise(function (resolve, reject) {
     reject(data);
   });
 };
 
-Bid.prototype.mock = function (method, pathname, mockObject) {
+Ask.prototype.mock = function (method, pathname, mockObject) {
   if (mockObject === undefined) return this.mocks[method.toLowerCase()][slash(pathname)]; 
   
   return this.mocks[method.toLowerCase()][slash(pathname)] = mockObject;
 };
 
-Bid.prototype.http = function (method) {
+Ask.prototype.http = function (method) {
   var rawHttp = this._rawHttp;
   var uri = rest(asArray(arguments)).join('/');
   
@@ -85,19 +85,19 @@ Bid.prototype.http = function (method) {
   resource.headers = clone(this.headers);
   resource.xhrOptions = clone(this.xhrOptions);
   resource.queries = clone(this.queries);
-  settings.mixInto(resource);
+  proto.mixInto(resource);
   
   return resource;
 };
 
-Bid.prototype.when = function (method, pathname) {
+Ask.prototype.when = function (method, pathname) {
   var mockedRequest = mockRequestResponse(this, method, pathname);
   return this.mock(method, pathname, mockedRequest);
 };
 
 // Create help http verb functions
-Bid.HTTP_METHODS.forEach(function (method) {
-  Bid.prototype[method.toLowerCase()] = function () {
+Ask.HTTP_METHODS.forEach(function (method) {
+  Ask.prototype[method.toLowerCase()] = function () {
     var args = asArray(arguments);
     args.unshift(method);
     
@@ -110,4 +110,4 @@ function rest (arr) {
 }
 
 //
-module.exports = Bid;
+module.exports = Ask;

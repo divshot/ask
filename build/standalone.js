@@ -7,8 +7,8 @@ var minify = require('minify');
 var mkdirp = require('mkdirp');
 
 var ENTRY_FILE = path.resolve(__dirname, '../index.js');
-var DIST_FILE = path.resolve(__dirname, '../dist/bid.js');
-var DIST_FILE_MIN = path.resolve(__dirname, '../dist/bid.min.js');
+var DIST_FILE = path.resolve(__dirname, '../dist/ask.js');
+var DIST_FILE_MIN = path.resolve(__dirname, '../dist/ask.min.js');
 
 // Create dist directory
 mkdirp.sync(path.resolve(__dirname, '../dist'));

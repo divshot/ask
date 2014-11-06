@@ -2,19 +2,19 @@
 var asArray = require('as-array');
 var slash = require('slasher');
 var request = require('httpify');
-var urlJoin = require('./lib/url-join');
+var join = require('join-path');
 var Promise = require('promise');
 var deap = require('deap');
 var clone = deap.clone;
 var extend = deap.extend;
-var settings = require('./lib/settings');
+var proto = require('./lib/proto');
 var mockRequestResponse = require('./lib/mock-request-response');
 
 var HTTP_METHODS = 'GET POST PUT DELETE PATCH OPTIONS'.split(' ');
 
 //
-function Bid (options) {
-  if (!(this instanceof Bid)) return new Bid(options);
+function Ask (options) {
+  if (!(this instanceof Ask)) return new Ask(options);
   if (!options) options = {};
   
   this.origin(options.origin);
@@ -28,37 +28,37 @@ function Bid (options) {
   }, this);
 }
 
-Bid.HTTP_METHODS = HTTP_METHODS;
-Bid.join = urlJoin;
-settings.mixInto(Bid.prototype);
+Ask.HTTP_METHODS = HTTP_METHODS;
+Ask.join = join;
+proto.mixInto(Ask.prototype);
 
-Bid.prototype._rawHttp = function (options) {
+Ask.prototype._rawHttp = function (options) {
   return request(options);
 };
 
-Bid.prototype.promise = function (callback) {
+Ask.prototype.promise = function (callback) {
   return new Promise(callback);
 };
 
-Bid.prototype.asPromise = function (data) {
+Ask.prototype.asPromise = function (data) {
   return this.promise(function (resolve) {
     resolve(data);
   });
 };
 
-Bid.prototype.asRejectedPromise = function (data) {
+Ask.prototype.asRejectedPromise = function (data) {
   return this.promise(function (resolve, reject) {
     reject(data);
   });
 };
 
-Bid.prototype.mock = function (method, pathname, mockObject) {
+Ask.prototype.mock = function (method, pathname, mockObject) {
   if (mockObject === undefined) return this.mocks[method.toLowerCase()][slash(pathname)]; 
   
   return this.mocks[method.toLowerCase()][slash(pathname)] = mockObject;
 };
 
-Bid.prototype.http = function (method) {
+Ask.prototype.http = function (method) {
   var rawHttp = this._rawHttp;
   var uri = rest(asArray(arguments)).join('/');
   
@@ -86,19 +86,19 @@ Bid.prototype.http = function (method) {
   resource.headers = clone(this.headers);
   resource.xhrOptions = clone(this.xhrOptions);
   resource.queries = clone(this.queries);
-  settings.mixInto(resource);
+  proto.mixInto(resource);
   
   return resource;
 };
 
-Bid.prototype.when = function (method, pathname) {
+Ask.prototype.when = function (method, pathname) {
   var mockedRequest = mockRequestResponse(this, method, pathname);
   return this.mock(method, pathname, mockedRequest);
 };
 
 // Create help http verb functions
-Bid.HTTP_METHODS.forEach(function (method) {
-  Bid.prototype[method.toLowerCase()] = function () {
+Ask.HTTP_METHODS.forEach(function (method) {
+  Ask.prototype[method.toLowerCase()] = function () {
     var args = asArray(arguments);
     args.unshift(method);
     
@@ -111,8 +111,8 @@ function rest (arr) {
 }
 
 //
-module.exports = Bid;
-},{"./lib/mock-request-response":5,"./lib/settings":6,"./lib/url-join":7,"as-array":8,"deap":20,"httpify":17,"promise":17,"slasher":24}],2:[function(require,module,exports){
+module.exports = Ask;
+},{"./lib/mock-request-response":5,"./lib/proto":6,"as-array":7,"deap":19,"httpify":16,"join-path":22,"promise":16,"slasher":31}],2:[function(require,module,exports){
 'use strict';
 
 module.exports = function ($http, $q) {
@@ -236,10 +236,10 @@ module.exports = function (context, method, pathname) {
 };
 },{}],6:[function(require,module,exports){
 var mix = require('mix-into');
-var join = require('./url-join');
+var join = require('join-path');
 var extend = require('deap').extend;
 
-// Settings mixin
+// Proto mixin
 module.exports = mix({
   origin: function (origin) {
     if (!this.attributes) this.attributes = {};
@@ -316,20 +316,7 @@ function parseQueryString (queryObject) {
   
   return qs.join('&');
 }
-},{"./url-join":7,"deap":20,"mix-into":23}],7:[function(require,module,exports){
-function normalize (str) {
-  return str
-          .replace(/[\/]+/g, '/')
-          .replace(/\/\?/g, '?')
-          .replace(/\/\#/g, '#')
-          .replace(/\:\//g, '://');
-}
-
-module.exports = function () {
-  var joined = [].slice.call(arguments, 0).join('/');
-  return normalize(joined);
-};
-},{}],8:[function(require,module,exports){
+},{"deap":19,"join-path":22,"mix-into":27}],7:[function(require,module,exports){
 var isArgs = require('lodash.isarguments');
 var isObject = require('lodash.isobject');
 var values = require('lodash.values');
@@ -352,7 +339,7 @@ module.exports = function (data, convertObject) {
     ? data
     : [data];
 };
-},{"lodash.isarguments":9,"lodash.isobject":10,"lodash.values":12}],9:[function(require,module,exports){
+},{"lodash.isarguments":8,"lodash.isobject":9,"lodash.values":11}],8:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -394,7 +381,7 @@ function isArguments(value) {
 
 module.exports = isArguments;
 
-},{}],10:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -435,7 +422,7 @@ function isObject(value) {
 
 module.exports = isObject;
 
-},{"lodash._objecttypes":11}],11:[function(require,module,exports){
+},{"lodash._objecttypes":10}],10:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -457,7 +444,7 @@ var objectTypes = {
 
 module.exports = objectTypes;
 
-},{}],12:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -495,7 +482,7 @@ function values(object) {
 
 module.exports = values;
 
-},{"lodash.keys":13}],13:[function(require,module,exports){
+},{"lodash.keys":12}],12:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -533,7 +520,7 @@ var keys = !nativeKeys ? shimKeys : function(object) {
 
 module.exports = keys;
 
-},{"lodash._isnative":14,"lodash._shimkeys":15,"lodash.isobject":10}],14:[function(require,module,exports){
+},{"lodash._isnative":13,"lodash._shimkeys":14,"lodash.isobject":9}],13:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -569,7 +556,7 @@ function isNative(value) {
 
 module.exports = isNative;
 
-},{}],15:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -609,11 +596,11 @@ var shimKeys = function(object) {
 
 module.exports = shimKeys;
 
-},{"lodash._objecttypes":16}],16:[function(require,module,exports){
-module.exports=require(11)
-},{"/Users/scott/www/divshot/bid/node_modules/as-array/node_modules/lodash.isobject/node_modules/lodash._objecttypes/index.js":11}],17:[function(require,module,exports){
+},{"lodash._objecttypes":15}],15:[function(require,module,exports){
+module.exports=require(10)
+},{"/Users/scott/www/divshot/bid/node_modules/as-array/node_modules/lodash.isobject/node_modules/lodash._objecttypes/index.js":10}],16:[function(require,module,exports){
 
-},{}],18:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 (function (process){
 // Copyright Joyent, Inc. and other Node contributors.
 //
@@ -841,7 +828,7 @@ var substr = 'ab'.substr(-1) === 'b'
 ;
 
 }).call(this,require('_process'))
-},{"_process":19}],19:[function(require,module,exports){
+},{"_process":18}],18:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -929,7 +916,7 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 
-},{}],20:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 var lib = require('./lib/deap');
 
 var deap = module.exports = lib.extend;
@@ -945,7 +932,7 @@ deap(deap, {
 	mergeShallow: lib.mergeShallow
 });
 
-},{"./lib/deap":21}],21:[function(require,module,exports){
+},{"./lib/deap":20}],20:[function(require,module,exports){
 var typeOf = require('./typeof'),
 	slice = Array.prototype.slice;
 
@@ -1068,7 +1055,7 @@ function deepMerge(a, b /*, [b2..n] */) {
 	return a;
 }
 
-},{"./typeof":22}],22:[function(require,module,exports){
+},{"./typeof":21}],21:[function(require,module,exports){
 
 module.exports = function(obj) {
 	var t = typeof obj;
@@ -1089,7 +1076,88 @@ module.exports = function(obj) {
 	return 'object';
 };
 
-},{}],23:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
+var path = require('path');
+var urlJoin = require('url-join');
+var asArray = require('as-array');
+var _isUrl = require('is-url');
+
+var exports = module.exports = function () {
+  
+  var paths = asArray(arguments)
+    .map(replaceUndefined);
+  
+  return isUrl(paths[0])
+    ? urlJoin.apply(urlJoin, paths)
+    : path.join.apply(path, paths);
+};
+
+var isUrl = exports.isUrl = function (url) {
+  
+  return _isUrl(url)
+    || url === 'http://'
+    || url === 'https://'
+    || url === 'ftp://';
+};
+
+var replaceUndefined = exports.replaceUndefined = function (p, idx, paths) {
+  
+  return  (p == undefined || p == null)
+    ? isUrl(paths[0]) ? '/' : path.sep
+    : p;
+}
+},{"as-array":23,"is-url":25,"path":17,"url-join":26}],23:[function(require,module,exports){
+var isArgs = require('lodash.isarguments');
+
+module.exports = function (data) {
+  if (!data) data = [];
+  if (isArgs(data)) data = [].splice.call(data, 0);
+  
+  return Array.isArray(data)
+    ? data
+    : [data];
+};
+},{"lodash.isarguments":24}],24:[function(require,module,exports){
+module.exports=require(8)
+},{"/Users/scott/www/divshot/bid/node_modules/as-array/node_modules/lodash.isarguments/index.js":8}],25:[function(require,module,exports){
+
+/**
+ * Expose `isUrl`.
+ */
+
+module.exports = isUrl;
+
+/**
+ * Matcher.
+ */
+
+var matcher = /^\w+:\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/;
+
+/**
+ * Loosely validate a URL `string`.
+ *
+ * @param {String} string
+ * @return {Boolean}
+ */
+
+function isUrl(string){
+  return matcher.test(string);
+}
+
+},{}],26:[function(require,module,exports){
+function normalize (str) {
+  return str
+          .replace(/[\/]+/g, '/')
+          .replace(/\/\?/g, '?')
+          .replace(/\/\#/g, '#')
+          .replace(/\:\//g, '://');
+}
+
+module.exports = function () {
+  var joined = [].slice.call(arguments, 0).join('/');
+  return normalize(joined);
+};
+},{}],27:[function(require,module,exports){
 var clone = require('deap').clone;
 
 var mix = function (source) {
@@ -1138,7 +1206,13 @@ function mixInto (source) {
 }
 
 module.exports = mix;
-},{"deap":20}],24:[function(require,module,exports){
+},{"deap":28}],28:[function(require,module,exports){
+module.exports=require(19)
+},{"./lib/deap":29,"/Users/scott/www/divshot/bid/node_modules/deap/index.js":19}],29:[function(require,module,exports){
+module.exports=require(20)
+},{"./typeof":30,"/Users/scott/www/divshot/bid/node_modules/deap/lib/deap.js":20}],30:[function(require,module,exports){
+module.exports=require(21)
+},{"/Users/scott/www/divshot/bid/node_modules/deap/lib/typeof.js":21}],31:[function(require,module,exports){
 var path = require('path');
 var join = path.join;
 var normalize = path.normalize;
@@ -1181,4 +1255,4 @@ function objectSlash (original, options) {
 
 module.exports = slasher;
 
-},{"path":18}]},{},[3]);
+},{"path":17}]},{},[3]);

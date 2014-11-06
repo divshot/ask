@@ -1,21 +1,21 @@
 describe('angular providers', function () {
   var app;
-  var bidProvider;
+  var askProvider;
   var scope;
   var ctrl;
   var httpMock;
   
   beforeEach(function () {
-    app = angular.module('BuilderTest', ['bid']);
-    app.config(function (_bidProvider_) {
-      bidProvider = _bidProvider_;
+    app = angular.module('BuilderTest', ['ask']);
+    app.config(function (_askProvider_) {
+      askProvider = _askProvider_;
     });
-    app.controller('TestController', function ($scope, bid) {
-      bid.origin('http://testhost.com');
-      var tester = bid.get('test');
+    app.controller('TestController', function ($scope, ask) {
+      ask.origin('http://testhost.com');
+      var tester = ask.get('test');
       
       $scope.origin = tester.origin();
-      $scope.bid = bid;
+      $scope.ask = ask;
       
       $scope.test = function () {
         return tester().then(function (res) {
@@ -27,22 +27,22 @@ describe('angular providers', function () {
   
   beforeEach(module('BuilderTest'));
   
-  beforeEach(inject(function ($rootScope, $controller, bid, $httpBackend) {
+  beforeEach(inject(function ($rootScope, $controller, ask, $httpBackend) {
     scope = $rootScope.$new();
     ctrl = $controller('TestController', {
       '$scope': scope,
-      bid: bid
+      ask: ask
     });
     
     httpMock = $httpBackend;
   }));
   
   it('can configure the request provider', function () {
-    bidProvider.configure({
+    askProvider.configure({
       origin: 'http://somehost.com'
     });
     
-    expect(bidProvider._options).to.eql({origin: 'http://somehost.com'});
+    expect(askProvider._options).to.eql({origin: 'http://somehost.com'});
   });
   
   // it.skip('overwrites the request object with angular $http', function (done) {

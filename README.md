@@ -1,4 +1,4 @@
-# bid
+# ask
 
 A simple, chainable way to construct HTTP requests in Node or the browser (Angular or Standalone);
 
@@ -13,13 +13,13 @@ A simple, chainable way to construct HTTP requests in Node or the browser (Angul
 Bower
 
 ```
-bower install bid --save
+bower install ask --save
 ```
 
 NPM
 
 ```
-npm install bid --save
+npm install ask --save
 ```
 
 ## Usage
@@ -29,34 +29,34 @@ npm install bid --save
 Standalone
 
 ```html
-<script src="/bower_components/bid/dist/bid.js"></script>
+<script src="/bower_components/ask/dist/ask.js"></script>
 ```
 
 Angular
 
 ```html
-<script src="/bower_components/bid/dist/bid.angular.js"></script>
+<script src="/bower_components/ask/dist/ask.angular.js"></script>
 ```
 
 ```js
-var myApp = angular.module('myApp', ['bid']);
+var myApp = angular.module('myApp', ['ask']);
 
-myApp.config(function (bidProvider) {
+myApp.config(function (askProvider) {
   
   /* This is optional */
   
-  bidProvider.configure({
+  askProvider.configure({
     origin: 'http://api.example.com',
     headers: {/* optional default headers */},
     xhrOptions: {/* optional xhr options */}
   });
 });
 
-myApp.controller('SomeController', function (bid /* instance of Bid */) {
+myApp.controller('SomeController', function (ask /* instance of Ask */) {
   
 });
 
-myApp.controller('AnotherController', function (Bid /* ready to instantiate */) {
+myApp.controller('AnotherController', function (Ask /* ready to instantiate */) {
   
 })
 ```
@@ -64,7 +64,7 @@ myApp.controller('AnotherController', function (Bid /* ready to instantiate */) 
 Nodejs/Browserify
 
 ```js
-var bid = require('bid');
+var ask = require('ask');
 ```
 
 ### How to Build Requests
@@ -72,7 +72,7 @@ var bid = require('bid');
 Simple `GET` request
 
 ```js
-var request = bid({
+var request = ask({
   origin: '', /* default origin */
   headers: {/* set default headers */},
   xhrOptions: {/* default xhr options */
@@ -102,7 +102,7 @@ getUserFriends().then(function (res) {
 Simple `POST` request
 
 ```js
-var request = bid();
+var request = ask();
 
 request.origin('http://api.example.com');
 
@@ -124,13 +124,13 @@ createUser({
 
 ## Mocking HTTP Requests
 
-A useful feature with Bid is the ability to intercept http/xhr requests and provide custom response attributes, such as statusCode, headers, etc. This is is very helpful when testing code that uses the Bid module.
+A useful feature with Ask is the ability to intercept http/xhr requests and provide custom response attributes, such as statusCode, headers, etc. This is is very helpful when testing code that uses the Ask module.
 
 Before building a request:
 
 ```js
-var bid = require('bid');
-var request = bid();
+var ask = require('ask');
+var request = ask();
 
 request
   .when('GET', '/some/path')

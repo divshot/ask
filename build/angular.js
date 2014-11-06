@@ -8,8 +8,8 @@ var minify = require('minify');
 var mkdirp = require('mkdirp');
 
 var ENTRY_FILE = path.resolve(__dirname, '../lib/browser/angular.js');
-var DIST_FILE = path.resolve(__dirname, '../dist/bid.angular.js');
-var DIST_FILE_MIN = path.resolve(__dirname, '../dist/bid.angular.min.js');
+var DIST_FILE = path.resolve(__dirname, '../dist/ask.angular.js');
+var DIST_FILE_MIN = path.resolve(__dirname, '../dist/ask.angular.min.js');
 
 // Create dist directory
 mkdirp.sync(path.resolve(__dirname, '../dist'));
