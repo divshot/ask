@@ -58,6 +58,8 @@ Ask.prototype.mock = function (method, pathname, mockObject) {
 };
 
 Ask.prototype.http = function (method) {
+  
+  var self = this;
   var rawHttp = this._rawHttp;
   var uri = rest(asArray(arguments)).join('/');
   
@@ -85,6 +87,15 @@ Ask.prototype.http = function (method) {
   resource.headers = clone(this.headers);
   resource.xhrOptions = clone(this.xhrOptions);
   resource.queries = clone(this.queries);
+  
+  resource.extend = function () {
+    
+    var extended = clone(resource);
+    extended._uri = join(resource._uri + '/' + asArray(arguments).join('/'));
+    
+    return extended;
+  };
+  
   proto.mixInto(resource);
   
   return resource;

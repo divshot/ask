@@ -124,6 +124,24 @@ describe('making bare requests', function () {
     });
   });
   
+  it('extends a resource', function () {
+    
+    request
+      .origin(ORIGIN);
+    
+    var tests = request
+      .get('tests')
+        .header('custom', 'header')
+        .query('test', 'ing');
+        
+    var oneTest = tests
+      .extend('123')
+      .header('extended', 'header');
+    
+    expect(oneTest.url()).to.equal(ORIGIN + '/tests/123?test=ing');
+    expect(oneTest.headers.custom).to.equal('header');
+    expect(oneTest.headers.extended).to.equal('header');
+  });
 });
 
 describe('setting options', function () {
