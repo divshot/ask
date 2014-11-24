@@ -21,6 +21,8 @@ function Ask (options) {
   this.headers = clone(options.headers);
   this.xhrOptions = clone(options.xhrOptions);
   
+  this.resources = {};
+  
   // Set up http method mocks
   this.mocks = {};
   HTTP_METHODS.forEach(function (method) {
@@ -64,10 +66,6 @@ Ask.prototype.http = function (method) {
   var rawHttp = this._rawHttp;
   var uri = rest(asArray(arguments)).join('/');
   
-  // Handle mocking requests
-  var mock = this.mock(method, uri);
-  if (mock) return mock.fn();
-  
   // New resource object
   var resource = function (params) {
     var resourceObject = {
@@ -77,13 +75,16 @@ Ask.prototype.http = function (method) {
       form: params
     };
     
-    extend(resourceObject, resource.xhrOptions || {});
-    
-    return rawHttp(resourceObject);
+    // Should this resource be mocked, or real?
+    // It is ensured that you can define the mock before
+    // or after the resource is defined
+    var mock = self.mock(method, uri);
+    return mock
+      ? mock.fn()() 
+      : rawHttp(extend(resourceObject, resource.xhrOptions || {}));
   };
   
   resource._uri = uri;
-  resource._builderInstance = this;
   resource.attributes = clone(this.attributes);
   resource.headers = clone(this.headers);
   resource.xhrOptions = clone(this.xhrOptions);
@@ -98,6 +99,9 @@ Ask.prototype.http = function (method) {
   };
   
   proto.mixInto(resource);
+  
+  // Store resources
+  this.resources[resource.url()] = resource;
   
   return resource;
 };

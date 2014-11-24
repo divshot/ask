@@ -26,6 +26,20 @@ describe('mocking http requests', function () {
     });
   });
   
+  it('works in any order', function () {
+      
+    var tester = request.get('test');
+    
+    request
+      .when('GET', '/test')
+      .respond('testing');
+    
+    return tester().then(function (res) {
+      
+      
+    });
+  });
+  
   it('sets a custom status code', function () {
     request
       .when('GET', '/some/endpoint')
