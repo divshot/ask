@@ -1,11 +1,10 @@
 # ask
 
-A simple, chainable way to construct HTTP requests in Node or the browser (Angular or Standalone);
+A simple, chainable way to construct HTTP requests in Node or the browser.
 
 **Usage Environments:**
 
 * [Node]()
-* [Angular]()
 * [Browser Standalone]()
 
 ## Install
@@ -30,35 +29,6 @@ Standalone
 
 ```html
 <script src="/bower_components/ask/dist/ask.js"></script>
-```
-
-Angular
-
-```html
-<script src="/bower_components/ask/dist/ask.angular.js"></script>
-```
-
-```js
-var myApp = angular.module('myApp', ['ask']);
-
-myApp.config(function (askProvider) {
-  
-  /* This is optional */
-  
-  askProvider.configure({
-    origin: 'http://api.example.com',
-    headers: {/* optional default headers */},
-    xhrOptions: {/* optional xhr options */}
-  });
-});
-
-myApp.controller('SomeController', function (ask /* instance of Ask */) {
-  
-});
-
-myApp.controller('AnotherController', function (Ask /* ready to instantiate */) {
-  
-})
 ```
 
 Nodejs/Browserify
@@ -175,7 +145,7 @@ Set individual headers for the response. If no value is provided, the current he
 
 ## Build
 
-Builds standalone and Angular version of the module
+Builds standalone version
 
 ```
 npm install
