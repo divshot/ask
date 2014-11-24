@@ -40,6 +40,19 @@ describe('mocking http requests', function () {
     });
   });
   
+  it('provides the request body in the response', function () {
+    
+    var tester = request.post('test');
+    
+    request.when('POST', '/test')
+      .respond('testing');
+    
+    return tester({body: 'body'}).then(function (res) {
+      
+      expect(res.request.body).to.eql({body: 'body'});
+    });
+  });
+  
   it('sets a custom status code', function () {
     request
       .when('GET', '/some/endpoint')

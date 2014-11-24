@@ -79,9 +79,18 @@ Ask.prototype.http = function (method) {
     // It is ensured that you can define the mock before
     // or after the resource is defined
     var mock = self.mock(method, uri);
-    return mock
-      ? mock.fn()() 
-      : rawHttp(extend(resourceObject, resource.xhrOptions || {}));
+    if (mock) {
+      mock.request = {
+        body: params,
+        method: method,
+        pathname: slash(uri),
+        headers: resource.headers
+      };
+      return mock.fn()();
+    }
+    else {
+      return rawHttp(extend(resourceObject, resource.xhrOptions || {}));
+    }
   };
   
   resource._uri = uri;
