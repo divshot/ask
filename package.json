@@ -7,13 +7,11 @@
     "test": "test"
   },
   "scripts": {
-    "test": "npm run lint && npm run build && npm run test-server && npm run test-browser",
+    "test": "npm run lint && npm run build && npm run test-server",
     "test-server": "echo '\nTesting Server:\n' && mocha test/server/**/*.js --reporter spec",
     "test-browser": "echo '\nTesting Angular:\n\n' && ./node_modules/karma/bin/karma start karma.conf.js",
     "lint": "jshint index.js lib/",
-    "build": "npm run bundle-standalone && npm run bundle-angular",
-    "bundle-standalone": "build/standalone.js",
-    "bundle-angular": "build/angular.js"
+    "build": "build/standalone.js"
   },
   "repository": {
     "type": "git",
@@ -36,15 +34,10 @@
     "browserify": "^6.0.3",
     "chai": "^1.9.2",
     "jshint": "^2.5.6",
-    "karma": "^0.12.24",
-    "karma-expect": "^1.1.0",
-    "karma-mocha": "^0.1.9",
-    "karma-phantomjs-launcher": "^0.1.4",
     "minify": "^1.0.3",
     "mkdirp": "^0.5.0",
-    "mocha": "^1.21.4",
+    "mocha": "^2.0.1",
     "mocksy": "^0.1.7",
-    "ngmin": "^0.5.0",
     "testling": "^1.7.1"
   },
   "dependencies": {
@@ -54,6 +47,6 @@
     "join-path": "^1.0.0",
     "mix-into": "^0.4.0",
     "promise": "^6.0.0",
-    "slasher": "^0.1.5"
+    "slasher": "^1.1.0"
   }
 }

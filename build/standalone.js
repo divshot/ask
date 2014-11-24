@@ -16,7 +16,7 @@ mkdirp.sync(path.resolve(__dirname, '../dist'));
 console.log('Bundling ...');
 
 browserify(ENTRY_FILE, {
-    standalone: 'RequestBuilder'
+    standalone: 'Ask'
   })
   .bundle()
   .pipe(fs.createWriteStream(DIST_FILE)).on('close', optimize);
