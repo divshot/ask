@@ -28,5 +28,6 @@ function optimize () {
   console.log('Minifying ...\n')
   minify(DIST_FILE_MIN, function (minifiedContents) {
     fs.writeFileSync(DIST_FILE_MIN, minifiedContents);
+    console.log('Build complete!');
   });
 }

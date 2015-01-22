@@ -4,10 +4,13 @@ var request = require('httpify');
 var join = require('join-path');
 var Promise = require('promise');
 var deap = require('deap');
-var clone = deap.clone;
-var extend = deap.extend;
+var Emitter = require('tiny-emitter');
+
 var proto = require('./lib/proto');
 var mockRequestResponse = require('./lib/mock-request-response');
+
+var clone = deap.clone;
+var extend = deap.extend;
 
 var HTTP_METHODS = 'GET POST PUT DELETE PATCH OPTIONS'.split(' ');
 
@@ -19,6 +22,7 @@ function Ask (options) {
   this.origin(options.origin);
   this.headers = clone(options.headers);
   this.xhrOptions = clone(options.xhrOptions);
+  this.events = new Emitter();
   
   this.resources = {};
   
@@ -34,7 +38,24 @@ Ask.join = join;
 proto.mixInto(Ask.prototype);
 
 Ask.prototype._rawHttp = function (options) {
-  return request(options);
+  
+  var self = this;
+  
+  return request(options, function (err, response) {
+    
+    self.events.emit('response', {
+      error: err,
+      response: response
+    });
+    
+    if (err) {
+      self.events.emit('response:error', err);
+    }
+    
+    if (!err) {
+      self.events.emit('response:success', response);
+    }
+  });
 };
 
 Ask.prototype.promise = function (callback) {
@@ -62,7 +83,7 @@ Ask.prototype.mock = function (method, pathname, mockObject) {
 Ask.prototype.http = function (method) {
   
   var self = this;
-  var rawHttp = this._rawHttp;
+  var rawHttp = this._rawHttp.bind(this);
   var uri = rest(asArray(arguments)).join('/');
   
   // New resource object

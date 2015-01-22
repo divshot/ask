@@ -1,7 +1,9 @@
 var expect = require('chai').expect;
 var Mocksy = require('mocksy');
-var server = new Mocksy({port: 9876});
+
 var ask = require('../../index.js');
+
+var server = new Mocksy({port: 9876});
 var ORIGIN = 'http://localhost:9876';
 
 describe('request instance', function () {

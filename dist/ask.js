@@ -5,10 +5,13 @@ var request = require('httpify');
 var join = require('join-path');
 var Promise = require('promise');
 var deap = require('deap');
-var clone = deap.clone;
-var extend = deap.extend;
+var Emitter = require('tiny-emitter');
+
 var proto = require('./lib/proto');
 var mockRequestResponse = require('./lib/mock-request-response');
+
+var clone = deap.clone;
+var extend = deap.extend;
 
 var HTTP_METHODS = 'GET POST PUT DELETE PATCH OPTIONS'.split(' ');
 
@@ -20,6 +23,7 @@ function Ask (options) {
   this.origin(options.origin);
   this.headers = clone(options.headers);
   this.xhrOptions = clone(options.xhrOptions);
+  this.events = new Emitter();
   
   this.resources = {};
   
@@ -35,7 +39,24 @@ Ask.join = join;
 proto.mixInto(Ask.prototype);
 
 Ask.prototype._rawHttp = function (options) {
-  return request(options);
+  
+  var self = this;
+  
+  return request(options, function (err, response) {
+    
+    self.events.emit('response', {
+      error: err,
+      response: response
+    });
+    
+    if (err) {
+      self.events.emit('response:error', err);
+    }
+    
+    if (!err) {
+      self.events.emit('response:success', response);
+    }
+  });
 };
 
 Ask.prototype.promise = function (callback) {
@@ -63,7 +84,7 @@ Ask.prototype.mock = function (method, pathname, mockObject) {
 Ask.prototype.http = function (method) {
   
   var self = this;
-  var rawHttp = this._rawHttp;
+  var rawHttp = this._rawHttp.bind(this);
   var uri = rest(asArray(arguments)).join('/');
   
   // New resource object
@@ -136,7 +157,7 @@ function rest (arr) {
 
 //
 module.exports = Ask;
-},{"./lib/mock-request-response":2,"./lib/proto":3,"as-array":4,"deap":15,"httpify":18,"join-path":27,"promise":36,"slasher":42}],2:[function(require,module,exports){
+},{"./lib/mock-request-response":2,"./lib/proto":3,"as-array":4,"deap":15,"httpify":18,"join-path":27,"promise":36,"slasher":42,"tiny-emitter":45}],2:[function(require,module,exports){
 module.exports = function (context, method, pathname) {
   return {
     context: context,
@@ -1207,7 +1228,7 @@ function createXHR(options, callback) {
     }
 
     // if we're getting a none-ok statusCode, build & return an error
-    function errorFromStatusCode(status) {
+    function errorFromStatusCode(status, body) {
         var error = null
         if (status === 0 || (status >= 400 && status < 600)) {
             var message = (typeof body === "string" ? body : false) ||
@@ -1222,9 +1243,10 @@ function createXHR(options, callback) {
     // will load the data & process the response in a special response object
     function loadResponse() {
         var status = getStatusCode()
-        var error = errorFromStatusCode(status)
+        var body = getBody()
+        var error = errorFromStatusCode(status, body)
         var response = {
-            body: getBody(),
+            body: body,
             statusCode: status,
             statusText: xhr.statusText,
             raw: xhr
@@ -1461,7 +1483,7 @@ module.exports = isUrl;
  * Matcher.
  */
 
-var matcher = /^\w+:\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/;
+var matcher = /^(?:\w+:)?\/\/([^\s\.]+\.\S{2}|localhost[\:?\d]*)\S*$/;
 
 /**
  * Loosely validate a URL `string`.
@@ -1806,7 +1828,10 @@ Promise.denodeify = function (fn, argumentCount) {
         if (err) reject(err)
         else resolve(res)
       })
-      fn.apply(self, args)
+      var res = fn.apply(self, args)
+      if (res && (typeof res === 'object' || typeof res === 'function') && typeof res.then === 'function') {
+        resolve(res)
+      }
     })
   }
 }
@@ -8821,5 +8846,71 @@ module.exports = function (data, options) {
 }.call(this));
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{}],45:[function(require,module,exports){
+function E () {
+	// Keep this empty so it's easier to inherit from
+  // (via https://github.com/lipsmack from https://github.com/scottcorgan/tiny-emitter/issues/3)
+}
+
+E.prototype = {
+	on: function (name, callback, ctx) {
+    var e = this.e || (this.e = {});
+    
+    (e[name] || (e[name] = [])).push({
+      fn: callback,
+      ctx: ctx
+    });
+    
+    return this;
+  },
+
+  once: function (name, callback, ctx) {
+    var self = this;
+    var fn = function () {
+      self.off(name, fn);
+      callback.apply(ctx, arguments);
+    };
+    
+    return this.on(name, fn, ctx);
+  },
+
+  emit: function (name) {
+    var data = [].slice.call(arguments, 1);
+    var evtArr = ((this.e || (this.e = {}))[name] || []).slice();
+    var i = 0;
+    var len = evtArr.length;
+    
+    for (i; i < len; i++) {
+      evtArr[i].fn.apply(evtArr[i].ctx, data);
+    }
+    
+    return this;
+  },
+
+  off: function (name, callback) {
+    var e = this.e || (this.e = {});
+    var evts = e[name];
+    var liveEvents = [];
+    
+    if (evts && callback) {
+      for (var i = 0, len = evts.length; i < len; i++) {
+        if (evts[i].fn !== callback) liveEvents.push(evts[i]);
+      }
+    }
+    
+    // Remove event from queue to prevent memory leak
+    // Suggested by https://github.com/lazd
+    // Ref: https://github.com/scottcorgan/tiny-emitter/commit/c6ebfaa9bc973b33d110a84a307742b7cf94c953#commitcomment-5024910
+
+    (liveEvents.length) 
+      ? e[name] = liveEvents
+      : delete e[name];
+    
+    return this;
+  }
+};
+
+module.exports = E;
+
 },{}]},{},[1])(1)
 });
