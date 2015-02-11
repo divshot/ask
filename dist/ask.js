@@ -49,8 +49,8 @@ Ask.prototype._rawHttp = function (options) {
       response: response
     });
     
-    if (err) {
-      self.events.emit('response:error', err);
+    if (err || response.statusCode >= 400) {
+      self.events.emit('response:error', err || response);
     }
     
     if (!err) {

@@ -1,6 +1,6 @@
 {
   "name": "ask",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "A simple, chainable way to construct HTTP requests in Node or the browser",
   "main": "index.js",
   "directories": {
