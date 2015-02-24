@@ -92,9 +92,16 @@ Ask.prototype.http = function (method) {
     var resourceObject = {
       url: resource.url(),
       method: method,
-      headers: resource.headers,
-      form: params
+      headers: resource.headers
     };
+    
+    if (typeof params === 'object') {
+      resourceObject.json = true;
+      resourceObject.body = params;
+    }
+    else if (typeof params === 'string') {
+      resourceObject.body = params;
+    }
     
     // Should this resource be mocked, or real?
     // It is ensured that you can define the mock before
